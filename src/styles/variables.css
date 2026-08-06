@@ -1,0 +1,112 @@
+:root, [data-theme="dark"] {
+  /* Color Palette - Dimensional Dark Theme */
+  --bg-main: #050507;
+  --bg-sidebar: #0a0a0d;
+  --bg-card: #111114;
+  --bg-card-hover: #19191e;
+  --bg-input: #141417;
+
+  /* Elevated Surface Layers (for stacked depth) */
+  --bg-elevated: #1a1a1f;
+  --bg-sunken: #08080a;
+
+  /* Primary & Secondary Accents */
+  --primary: #EB9D86;
+  --primary-hover: #D4826A;
+  --primary-light: rgba(235, 157, 134, 0.15);
+  --secondary: #F2BDA8;
+  --secondary-hover: #EB9D86;
+  --secondary-light: rgba(242, 189, 168, 0.15);
+
+  /* Functional Status Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --danger-light: rgba(239, 68, 68, 0.15);
+
+  /* Typography Colors */
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+  --text-dim: #71717a;
+
+  /* Structural Borders & Shadows — layered for depth */
+  --border-color: #222226;
+  --border-subtle: #1a1a1e;
+  --border-focus: #EB9D86;
+
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.03);
+  --shadow-md: 0 4px 16px -2px rgba(0, 0, 0, 0.8), 0 2px 6px -1px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --shadow-lg: 0 12px 32px -6px rgba(0, 0, 0, 0.9), 0 8px 16px -4px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
+
+  /* Inner glow for cards (warm accent-tinted) */
+  --glow-card: inset 0 1px 0 0 rgba(255, 255, 255, 0.04), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+  --glow-primary: 0 0 20px -4px rgba(235, 157, 134, 0.2);
+
+  /* Border Radius System */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  /* Spacing System */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Fonts */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', 'Inter', sans-serif;
+
+  /* Animation Timings */
+  --transition-fast: 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="light"] {
+  /* Color Palette - Clean Light Theme */
+  --bg-main: #ffffff;
+  --bg-sidebar: #f4f4f5;
+  --bg-card: #fafafa;
+  --bg-card-hover: #f4f4f5;
+  --bg-input: #ffffff;
+
+  /* Elevated Surface Layers */
+  --bg-elevated: #ffffff;
+  --bg-sunken: #f0f0f2;
+
+  /* Primary & Secondary Accents */
+  --primary: #EB9D86;
+  --primary-hover: #D4826A;
+  --primary-light: rgba(235, 157, 134, 0.12);
+  --secondary: #F2BDA8;
+  --secondary-hover: #EB9D86;
+  --secondary-light: rgba(242, 189, 168, 0.15);
+
+  /* Functional Status Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --danger-light: rgba(239, 68, 68, 0.12);
+
+  /* Typography Colors */
+  --text-main: #09090b;
+  --text-muted: #71717a;
+  --text-dim: #a1a1aa;
+
+  /* Structural Borders & Shadows */
+  --border-color: #e4e4e7;
+  --border-subtle: #f4f4f5;
+  --border-focus: #EB9D86;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+
+  /* Card glow (invisible in light mode) */
+  --glow-card: none;
+  --glow-primary: none;
+}

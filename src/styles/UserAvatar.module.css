@@ -1,0 +1,30 @@
+.avatarBox {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: #ffffff;
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(235, 157, 134, 0.4);
+  border: 1.5px solid var(--border-color);
+  transition: all var(--transition-fast);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.avatarBox:hover {
+  transform: scale(1.06);
+  border-color: var(--primary);
+}
+
+.lg {
+  width: 52px;
+  height: 52px;
+  font-size: 20px;
+}

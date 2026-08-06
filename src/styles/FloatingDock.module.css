@@ -1,0 +1,87 @@
+.dockContainer {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 990;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: rgba(17, 17, 17, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  transition: all var(--transition-normal);
+}
+
+[data-theme="light"] .dockContainer {
+  background-color: rgba(250, 250, 250, 0.8);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.dockItem {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  position: relative;
+}
+
+.dockItem:hover {
+  transform: translateY(-6px) scale(1.12);
+  color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 6px 16px rgba(235, 157, 134, 0.3);
+}
+
+.activeDockItem {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.dockTooltip {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.dockItem:hover .dockTooltip {
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .dockContainer {
+    bottom: 12px;
+    padding: 6px 12px;
+    gap: 8px;
+  }
+  .dockItem {
+    width: 36px;
+    height: 36px;
+  }
+}

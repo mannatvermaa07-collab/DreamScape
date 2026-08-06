@@ -1,0 +1,49 @@
+.layoutContainer {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+.mainContent {
+  flex: 1;
+  margin-left: 240px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left var(--transition-normal);
+}
+
+.mainContentCollapsed {
+  margin-left: 72px;
+}
+
+.pageContainer {
+  padding: 16px 28px 100px 28px;
+  max-width: 1360px;
+  width: 100%;
+  margin: 0 auto;
+  flex: 1;
+}
+
+.mobileBackdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  z-index: 95;
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    margin-left: 0 !important;
+  }
+  .pageContainer {
+    padding: 16px 16px 90px 16px;
+  }
+  .mobileBackdropShow {
+    display: block;
+  }
+}
