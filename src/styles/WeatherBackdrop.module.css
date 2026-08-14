@@ -1,0 +1,128 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  transition: background 1.2s ease;
+}
+
+.sun {
+  background: radial-gradient(circle at 82% 10%, rgba(224, 164, 88, 0.16), transparent 55%);
+}
+
+.partly {
+  background: radial-gradient(circle at 78% 12%, rgba(107, 156, 120, 0.12), transparent 50%);
+}
+
+.cloudy {
+  background: radial-gradient(circle at 50% 0%, rgba(138, 148, 166, 0.10), transparent 60%);
+}
+
+.rain {
+  background: linear-gradient(180deg, rgba(193, 105, 79, 0.08), transparent 70%);
+}
+
+.storm {
+  background: linear-gradient(180deg, rgba(122, 89, 128, 0.14), transparent 75%);
+}
+
+.sunWrap {
+  position: absolute;
+  top: -10%;
+  right: 4%;
+  width: 260px;
+  height: 260px;
+}
+
+.sunGlow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(224, 164, 88, 0.5), transparent 65%);
+  animation: sunPulse 8s ease-in-out infinite;
+}
+
+@keyframes sunPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+.sunRays {
+  position: absolute;
+  inset: -40%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg, rgba(224, 164, 88, 0.10) 8deg, transparent 16deg, transparent 40deg,
+    rgba(224, 164, 88, 0.10) 48deg, transparent 56deg, transparent 80deg,
+    rgba(224, 164, 88, 0.10) 88deg, transparent 96deg, transparent 120deg,
+    rgba(224, 164, 88, 0.10) 128deg, transparent 136deg, transparent 160deg,
+    rgba(224, 164, 88, 0.10) 168deg, transparent 176deg, transparent 200deg,
+    rgba(224, 164, 88, 0.10) 208deg, transparent 216deg, transparent 240deg,
+    rgba(224, 164, 88, 0.10) 248deg, transparent 256deg, transparent 280deg,
+    rgba(224, 164, 88, 0.10) 288deg, transparent 296deg, transparent 320deg,
+    rgba(224, 164, 88, 0.10) 328deg, transparent 336deg
+  );
+  animation: raySpin 90s linear infinite;
+}
+
+@keyframes raySpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.cloud {
+  position: absolute;
+  left: -20%;
+  width: 180px;
+  height: 60px;
+  background: radial-gradient(ellipse at center, rgba(138, 148, 166, 0.5), transparent 70%);
+  border-radius: 50%;
+  filter: blur(6px);
+  animation-name: cloudDrift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes cloudDrift {
+  from { transform: translateX(0) scale(var(--s, 1)); }
+  to { transform: translateX(140vw) scale(var(--s, 1)); }
+}
+
+.raindrop {
+  position: absolute;
+  top: -5%;
+  width: 1.5px;
+  background: linear-gradient(180deg, transparent, rgba(140, 170, 200, 0.55));
+  animation-name: rainFall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes rainFall {
+  from { transform: translateY(-10vh); opacity: 0; }
+  10% { opacity: 1; }
+  to { transform: translateY(110vh); opacity: 0.4; }
+}
+
+.lightningFlash {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  opacity: 0;
+  animation: flash 9s ease-in-out infinite;
+}
+
+@keyframes flash {
+  0%, 91%, 100% { opacity: 0; }
+  92% { opacity: 0.35; }
+  92.5% { opacity: 0; }
+  93% { opacity: 0.5; }
+  93.6% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sunGlow, .sunRays, .cloud, .raindrop, .lightningFlash {
+    animation: none !important;
+  }
+}

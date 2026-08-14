@@ -1,23 +1,68 @@
 .card {
+  position: relative;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
+  border-left: 3px solid var(--mood-color, var(--border-color));
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: 20px 22px 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  overflow: hidden;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background-color 0.22s ease;
+  animation: cardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* A quiet wash of the entry's mood color, low-key at rest and a touch
+   more present on hover — no blur/blob, just a soft directional fade. */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(150deg, var(--mood-color, transparent) 0%, transparent 38%);
+  opacity: 0.05;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
 }
 
 .card:hover {
-  background-color: var(--bg-card-hover);
-  border-color: #333a4c;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-md);
+  border-color: color-mix(in srgb, var(--mood-color, var(--border-color)) 45%, var(--border-color));
+}
+
+.card:hover::before {
+  opacity: 0.1;
+}
+
+/* Shrink-and-fade before the entry actually leaves the list. */
+.cardRemoving {
+  animation: cardOut 0.22s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes cardOut {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
 }
 
 .header {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -25,77 +70,95 @@
 }
 
 .dateInfo {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   color: var(--text-dim);
 }
 
-.badges {
-  display: flex;
+.moodChip {
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-}
-
-.moodTag {
-  background-color: var(--primary-light);
-  color: var(--primary);
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
+  gap: 4px;
+  padding: 3px 9px;
+  border: 1px solid transparent;
+  border-radius: 999px;
   font-size: 11px;
-  font-weight: 500;
-}
-
-.categoryBadge {
-  background-color: var(--bg-input);
-  color: var(--text-muted);
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
-  font-size: 11px;
-  border: 1px solid var(--border-subtle);
+  font-weight: 600;
 }
 
 .title {
+  position: relative;
+  z-index: 1;
   font-family: var(--font-heading);
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 15.5px;
+  font-weight: 700;
   color: var(--text-main);
   line-height: 1.3;
 }
 
 .snippet {
-  font-size: 13px;
+  position: relative;
+  z-index: 1;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 13.5px;
   color: var(--text-muted);
-  line-height: 1.5;
+  line-height: 1.6;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .footer {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 8px;
+  padding-top: 10px;
   border-top: 1px solid var(--border-subtle);
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .readMore {
-  font-size: 12px;
-  color: var(--primary);
-  font-weight: 500;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--mood-color, var(--primary));
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.readMore svg {
+  transition: transform 0.2s ease;
+}
+
+.card:hover .readMore svg {
+  transform: translateX(3px);
 }
 
 .actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
+}
+
+/* Actions fade in on hover for pointer devices only — touch devices get
+   no hover, so they keep the icons visible rather than hiding them. */
+@media (hover: hover) {
+  .actions {
+    opacity: 0;
+    transform: translateX(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .card:hover .actions {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .iconBtn {
@@ -103,7 +166,7 @@
   border: none;
   color: var(--text-dim);
   cursor: pointer;
-  padding: 4px;
+  padding: 5px;
   border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
   display: flex;
@@ -113,10 +176,30 @@
 
 .iconBtn:hover {
   color: var(--text-main);
-  background-color: rgba(255, 255, 255, 0.06);
+  background-color: var(--bg-input);
+  transform: scale(1.12);
 }
 
 .iconBtn.delete:hover {
   color: var(--danger);
   background-color: var(--danger-light);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card::before,
+  .readMore svg,
+  .actions,
+  .iconBtn {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .card:hover {
+    transform: none;
+  }
+
+  .cardRemoving {
+    opacity: 0;
+  }
 }

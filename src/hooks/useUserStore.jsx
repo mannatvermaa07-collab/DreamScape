@@ -58,7 +58,33 @@ function getCurrentEmail() {
 const UserStoreContext = createContext(null);
 
 export function UserStoreProvider({ children }) {
-  const [usersDB, setUsersDBState] = useState(() => getUsersDB());
+  const [isDemo, setIsDemo] = useState(() => {
+    return window.sessionStorage.getItem('dreamscape_is_demo') === 'true';
+  });
+
+  const [usersDB, setUsersDBState] = useState(() => {
+    const db = getUsersDB();
+    if (window.sessionStorage.getItem('dreamscape_is_demo') === 'true') {
+      db['demo@dreamscape.com'] = {
+        name: 'Guest User',
+        age: 20,
+        email: 'demo@dreamscape.com',
+        password: 'demo',
+        goals: [],
+        habits: [],
+        journals: [],
+        calendarEvents: [],
+        settings: { ...DEFAULT_SETTINGS },
+        chatbotHistory: [],
+        moodHistory: [],
+        tasks: [],
+        customCategories: [],
+        hasCompletedProfile: true
+      };
+    }
+    return db;
+  });
+
   const [activeEmail, setActiveEmailState] = useState(() => {
     return window.localStorage.getItem(ACTIVE_EMAIL_KEY) || DEFAULT_DEMO_USER.email;
   });
@@ -86,14 +112,48 @@ export function UserStoreProvider({ children }) {
       const current = prevDB[email] || activeUser;
       const updatedUser = typeof updater === 'function' ? updater(current) : { ...current, ...updater };
       const nextDB = { ...prevDB, [email]: updatedUser };
-      saveUsersDB(nextDB);
+      if (window.sessionStorage.getItem('dreamscape_is_demo') !== 'true') {
+        saveUsersDB(nextDB);
+      }
       return nextDB;
     });
-  }, []);
+  }, [activeUser]);
 
   // ──────────── Auth ────────────
 
+  const startDemo = useCallback(() => {
+    const demoUser = {
+      name: 'Guest User',
+      age: 20,
+      email: 'demo@dreamscape.com',
+      password: 'demo',
+      goals: [],
+      habits: [],
+      journals: [],
+      calendarEvents: [],
+      settings: { ...DEFAULT_SETTINGS },
+      chatbotHistory: [],
+      moodHistory: [],
+      tasks: [],
+      customCategories: [],
+      hasCompletedProfile: true
+    };
+
+    setUsersDBState((prevDB) => ({
+      ...prevDB,
+      'demo@dreamscape.com': demoUser
+    }));
+
+    setActiveEmailState('demo@dreamscape.com');
+    setIsDemo(true);
+    window.sessionStorage.setItem('dreamscape_is_demo', 'true');
+    window.localStorage.setItem(ACTIVE_EMAIL_KEY, 'demo@dreamscape.com');
+    return { success: true };
+  }, []);
+
   const login = useCallback((email, password) => {
+    setIsDemo(false);
+    window.sessionStorage.removeItem('dreamscape_is_demo');
     const db = getUsersDB();
     const targetEmail = email ? email.toLowerCase().trim() : DEFAULT_DEMO_USER.email;
     if (!db[targetEmail]) {
@@ -120,11 +180,13 @@ export function UserStoreProvider({ children }) {
     return { success: true };
   }, []);
 
-  const register = useCallback((name, age, email, password) => {
+  const register = useCallback((name, age, email, password, timelineStart, timelineEnd) => {
+    setIsDemo(false);
+    window.sessionStorage.removeItem('dreamscape_is_demo');
     const db = getUsersDB();
     const targetEmail = email ? email.toLowerCase().trim() : DEFAULT_DEMO_USER.email;
     const newUser = {
-      name: name || 'User',
+      name: name || targetEmail.split('@')[0] || 'User',
       age: Number(age) || 20,
       email: targetEmail,
       password: password || 'password',
@@ -132,7 +194,11 @@ export function UserStoreProvider({ children }) {
       habits: [],
       journals: [],
       calendarEvents: [],
-      settings: { ...DEFAULT_SETTINGS },
+      settings: { 
+        ...DEFAULT_SETTINGS,
+        timelineStart: timelineStart || '07:00',
+        timelineEnd: timelineEnd || '22:00'
+      },
       chatbotHistory: [],
       moodHistory: [],
       tasks: [],
@@ -148,6 +214,15 @@ export function UserStoreProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
+    // If leaving demo mode, wipe the entire demo user entry from memory
+    // so nothing they did during the session survives.
+    setUsersDBState((prevDB) => {
+      const next = { ...prevDB };
+      delete next['demo@dreamscape.com'];
+      return next;
+    });
+    setIsDemo(false);
+    window.sessionStorage.removeItem('dreamscape_is_demo');
     setActiveEmailState('');
     window.localStorage.removeItem(ACTIVE_EMAIL_KEY);
   }, []);
@@ -345,6 +420,8 @@ export function UserStoreProvider({ children }) {
     updateSettings,
     updateActiveUser,
     getTimelineSlots,
+    isDemo,
+    startDemo,
     // Goals
     goals: activeUser.goals || [],
     addGoal,

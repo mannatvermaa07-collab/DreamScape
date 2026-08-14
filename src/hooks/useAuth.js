@@ -9,6 +9,8 @@ export function useAuth() {
     login: store.login,
     register: store.register,
     logout: store.logout,
-    updateAccountInfo: store.updateAccountInfo
+    updateAccountInfo: store.updateAccountInfo,
+    isDemo: store.isDemo,
+    startDemo: store.startDemo
   };
 }

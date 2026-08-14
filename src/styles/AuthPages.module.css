@@ -6,9 +6,43 @@
   justify-content: center;
   padding: 20px;
   position: relative;
+  overflow: hidden;
+}
+
+/* Soft ambient blobs so the page doesn't feel flat/empty — same blue +
+   green pairing as the landing page, just toned down for a form-focused
+   layout. */
+.authContainer::before,
+.authContainer::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.authContainer::before {
+  top: -12%;
+  right: -8%;
+  width: 440px;
+  height: 440px;
+  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+  opacity: 0.3;
+}
+
+.authContainer::after {
+  bottom: -16%;
+  left: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #6D8F61 0%, transparent 70%);
+  opacity: 0.18;
 }
 
 .authCard {
+  position: relative;
+  z-index: 1;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
@@ -33,12 +67,12 @@
   width: 44px;
   height: 44px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, var(--primary) 0%, #6D28D9 100%);
+  background: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
+  color: var(--on-primary);
+  box-shadow: 0 4px 14px rgba(204, 228, 255, 0.4);
 }
 
 .title {
@@ -84,7 +118,7 @@
 
 .input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 10px rgba(204, 228, 255, 0.3);
 }
 
 .footerText {
@@ -94,7 +128,7 @@
 }
 
 .link {
-  color: var(--primary);
+  color: var(--primary-text);
   font-weight: 600;
 }
 
@@ -120,4 +154,3 @@
     gap: 16px;
   }
 }
-

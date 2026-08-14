@@ -18,7 +18,7 @@ import styles from '../../styles/SidebarPanels.module.css';
 export function SidebarPanels({ activePanel, onClose, isCollapsed }) {
   const store = useUserStore();
   const [inboxItems, setInboxItems] = useLocalStorage('dreamscape_inbox_items', [
-    { id: 'ib-1', text: 'Review quarterly goals framework', completed: false },
+    { id: 'ib-1', text: 'Check in on weekly habits', completed: false },
     { id: 'ib-2', text: 'Draft system architecture notes', completed: false }
   ]);
 
@@ -172,11 +172,7 @@ export function SidebarPanels({ activePanel, onClose, isCollapsed }) {
                   </div>
                   <div className={styles.focusTaskRow}>
                     <Check size={14} style={{ color: 'var(--primary)' }} />
-                    <span>Finish daily journal reflection</span>
-                  </div>
-                  <div className={styles.focusTaskRow}>
-                    <span style={{ width: '14px', height: '14px', borderRadius: '50%', border: '1.5px solid var(--border-color)', display: 'inline-block' }} />
-                    <span>Review weekly goal targets</span>
+                    <span>Finish daily notes</span>
                   </div>
                 </div>
               </div>
@@ -212,7 +208,7 @@ export function SidebarPanels({ activePanel, onClose, isCollapsed }) {
                 </div>
                 <div className={styles.statCard}>
                   <span className={styles.statValue}>8</span>
-                  <span className={styles.statLabel}>Goals Met</span>
+                  <span className={styles.statLabel}>Notes Written</span>
                 </div>
                 <div className={styles.statCard}>
                   <span className={styles.statValue}>12d</span>

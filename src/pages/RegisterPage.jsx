@@ -9,14 +9,15 @@ export function RegisterPage() {
   const navigate = useNavigate();
   const { register } = useAuth();
   const [name, setName] = useState('');
-  const [age, setAge] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [timelineStart, setTimelineStart] = useState('07:00');
+  const [timelineEnd, setTimelineEnd] = useState('22:00');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name || !age || !email || !password) return;
-    register(name, age, email, password);
+    if (!name || !email || !password || !timelineStart || !timelineEnd) return;
+    register(name, 20, email, password, timelineStart, timelineEnd);
     navigate('/app/dashboard');
   };
 
@@ -33,27 +34,13 @@ export function RegisterPage() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.field}>
-            <label className={styles.label}>Full Name</label>
+            <label className={styles.label}>Name</label>
             <input
               type="text"
               className={styles.input}
-              placeholder="e.g. Manat"
+              placeholder="Your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className={styles.field}>
-            <label className={styles.label}>Age</label>
-            <input
-              type="number"
-              className={styles.input}
-              placeholder="e.g. 19"
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-              min="10"
-              max="120"
               required
             />
           </div>
@@ -80,6 +67,48 @@ export function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div className={styles.field}>
+              <label className={styles.label}>Timeline Start</label>
+              <select
+                className={styles.input}
+                value={timelineStart}
+                onChange={(e) => {
+                  setTimelineStart(e.target.value);
+                  const sh = parseInt(e.target.value.split(':')[0], 10);
+                  const eh = parseInt(timelineEnd.split(':')[0], 10);
+                  if (eh <= sh) setTimelineEnd(`${String(sh + 1).padStart(2, '0')}:00`);
+                }}
+                required
+              >
+                {Array.from({ length: 24 }, (_, i) => {
+                  const h = String(i).padStart(2, '0') + ':00';
+                  return <option key={h} value={h}>{h}</option>;
+                })}
+              </select>
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.label}>Timeline End</label>
+              <select
+                className={styles.input}
+                value={timelineEnd}
+                onChange={(e) => setTimelineEnd(e.target.value)}
+                required
+              >
+                {Array.from({ length: 24 }, (_, i) => {
+                  const h = String(i).padStart(2, '0') + ':00';
+                  const sh = parseInt(timelineStart.split(':')[0], 10);
+                  return (
+                    <option key={h} value={h} disabled={i <= sh}>
+                      {h}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
           </div>
 
           <Button type="submit" variant="primary" size="lg" fullWidth icon={ArrowRight}>

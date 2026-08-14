@@ -2,11 +2,13 @@ import { useState } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
-  Target,
   BookOpen,
   Plus,
-  StickyNote,
+  Star,
+  Gift,
+  Sparkles,
   CheckCircle,
+  Circle,
   Clock
 } from 'lucide-react';
 import { useGoals } from '../hooks/useGoals';
@@ -20,6 +22,45 @@ import styles from '../styles/CalendarPage.module.css';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+// Indian national holidays & major festivals.
+// Gazetted holidays have exact fixed dates; lunar-calendar festivals
+// (Holi, Diwali, Eid, etc.) use their most common approximate date —
+// swap out for a real calendar API if you need year-accurate dates.
+const HOLIDAYS = [
+  { month: 0,  day: 1,  name: 'New Year\'s Day' },
+  { month: 0,  day: 14, name: 'Makar Sankranti / Lohri' },
+  { month: 0,  day: 23, name: 'Netaji Subhas Chandra Bose Jayanti' },
+  { month: 0,  day: 26, name: 'Republic Day' },
+  { month: 1,  day: 19, name: 'Maha Shivratri (approx.)' },
+  { month: 2,  day: 14, name: 'Holi (approx.)' },
+  { month: 2,  day: 25, name: 'Gudi Padwa / Ugadi (approx.)' },
+  { month: 3,  day: 6,  name: 'Ram Navami (approx.)' },
+  { month: 3,  day: 14, name: 'Baisakhi / Dr. Ambedkar Jayanti' },
+  { month: 3,  day: 18, name: 'Good Friday' },
+  { month: 4,  day: 1,  name: 'Labour Day / Maharashtra Day' },
+  { month: 4,  day: 12, name: 'Buddha Purnima (approx.)' },
+  { month: 6,  day: 6,  name: 'Eid ul-Adha (approx.)' },
+  { month: 6,  day: 17, name: 'Muharram (approx.)' },
+  { month: 7,  day: 9,  name: 'Janmashtami (approx.)' },
+  { month: 7,  day: 15, name: 'Independence Day' },
+  { month: 8,  day: 2,  name: 'Onam (approx.)' },
+  { month: 8,  day: 26, name: 'Eid-e-Milad (approx.)' },
+  { month: 9,  day: 2,  name: 'Gandhi Jayanti' },
+  { month: 9,  day: 2,  name: 'Navratri Begins (approx.)' },
+  { month: 9,  day: 12, name: 'Dussehra (approx.)' },
+  { month: 9,  day: 20, name: 'Diwali (approx.)' },
+  { month: 9,  day: 22, name: 'Govardhan Puja (approx.)' },
+  { month: 9,  day: 23, name: 'Bhai Dooj (approx.)' },
+  { month: 10, day: 5,  name: 'Guru Nanak Jayanti (approx.)' },
+  { month: 10, day: 14, name: 'Children\'s Day' },
+  { month: 11, day: 25, name: 'Christmas Day' },
+  { month: 11, day: 31, name: 'New Year\'s Eve' },
+];
+
+function getHolidaysForDate(dateObj) {
+  return HOLIDAYS.filter((h) => h.month === dateObj.getMonth() && h.day === dateObj.getDate());
+}
+
 function getLocalDateString(dateObj) {
   const y = dateObj.getFullYear();
   const m = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -27,18 +68,16 @@ function getLocalDateString(dateObj) {
   return `${y}-${m}-${d}`;
 }
 
-// Convert task dayOffset to an actual date string (YYYY-MM-DD)
-// dayOffset is relative to the current week's Monday
+// Tasks are stored with an absolute `date` field (a "YYYY-MM-DD" string set
+// once, at creation, from the exact day the task was created for — see
+// DashboardPage's toDateKey()). This used to instead be computed from a
+// `dayOffset` relative to the CURRENT real-world week's Monday, which is
+// why every task without that legacy field collapsed onto the same day
+// (whatever this week's Monday happens to be) regardless of which day it
+// actually belonged to. Tasks now carry their real date directly, so we
+// just read it — no recomputation needed.
 function getTaskDateString(task) {
-  const today = new Date();
-  const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon ... 6=Sat
-  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-  const monday = new Date(today);
-  monday.setDate(today.getDate() + mondayOffset);
-
-  const taskDate = new Date(monday);
-  taskDate.setDate(monday.getDate() + (task.dayOffset || 0));
-  return getLocalDateString(taskDate);
+  return task.date || getLocalDateString(new Date());
 }
 
 export function CalendarPage() {
@@ -46,8 +85,15 @@ export function CalendarPage() {
   const { habits } = useHabits();
   const { entries } = useJournal();
   const store = useUserStore();
+  const isDemo = store.isDemo;
   const tasks = store.tasks || [];
-  const [dayNotes, setDayNotes] = useLocalStorage('dreamscape_day_notes', {});
+
+  // In demo mode keep notes in-memory only — never read from or write to
+  // localStorage so personal notes added by a guest don't persist.
+  const [persistedNotes, setPersistedNotes] = useLocalStorage('dreamscape_day_notes', {});
+  const [demoNotes, setDemoNotes] = useState({});
+  const dayNotes = isDemo ? demoNotes : persistedNotes;
+  const setDayNotes = isDemo ? setDemoNotes : setPersistedNotes;
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDayDate, setSelectedDayDate] = useState(null);
@@ -94,14 +140,33 @@ export function CalendarPage() {
     calendarDays.push({ date: d, isCurrentMonth: false });
   }
 
-  // Get items for a date string (YYYY-MM-DD)
+  // Get items for a date. `important` (holidays + user-added notes like
+  // birthdays/festivals) is the primary thing a day cell shows. Tasks,
+  // scheduled events, goals, and journal entries are secondary — surfaced
+  // as a quiet summary in the cell and as plain lists in the day modal.
   const getItemsForDate = (dateObj) => {
     const dateStr = getLocalDateString(dateObj);
     const dateGoals = goals.filter((g) => g.targetDate === dateStr || (g.completed && dateStr === g.createdAt));
     const dateEntries = entries.filter((e) => e.date === dateStr);
-    const dateTasks = tasks.filter((t) => getTaskDateString(t) === dateStr);
+    const dateTasks = tasks.filter((t) => getTaskDateString(t) === dateStr && t.type !== 'event');
+    const dateEvents = tasks.filter((t) => getTaskDateString(t) === dateStr && t.type === 'event');
+    const dateHolidays = getHolidaysForDate(dateObj);
     const notesForDay = dayNotes[dateStr] || [];
-    return { dateStr, goals: dateGoals, entries: dateEntries, tasks: dateTasks, notes: notesForDay };
+
+    const important = [
+      ...dateHolidays.map((h, i) => ({ key: `holiday-${i}`, label: h.name, kind: 'holiday' })),
+      ...notesForDay.map((n, i) => ({ key: `note-${i}`, label: n, kind: 'note' }))
+    ];
+
+    return {
+      dateStr,
+      goals: dateGoals,
+      entries: dateEntries,
+      tasks: dateTasks,
+      events: dateEvents,
+      notes: notesForDay,
+      important
+    };
   };
 
   const handleAddDayNote = (e) => {
@@ -140,52 +205,53 @@ export function CalendarPage() {
         ))}
 
         {calendarDays.map((cell, idx) => {
-          const { dateStr, goals: cellGoals, entries: cellEntries, tasks: cellTasks, notes: cellNotes } = getItemsForDate(cell.date);
+          const {
+            dateStr,
+            goals: cellGoals,
+            entries: cellEntries,
+            tasks: cellTasks,
+            events: cellEvents,
+            important
+          } = getItemsForDate(cell.date);
           const isToday = dateStr === todayStr;
-          const isFuture = cell.date > new Date(new Date().setHours(23, 59, 59, 999));
+
+          // Secondary line: a single quiet summary instead of a badge per item
+          const secondaryParts = [];
+          if (cellTasks.length) secondaryParts.push(`${cellTasks.length} task${cellTasks.length > 1 ? 's' : ''}`);
+          if (cellEvents.length) secondaryParts.push(`${cellEvents.length} event${cellEvents.length > 1 ? 's' : ''}`);
+          if (cellGoals.length) secondaryParts.push(`${cellGoals.length} goal${cellGoals.length > 1 ? 's' : ''}`);
+          if (cellEntries.length) secondaryParts.push('journal');
 
           return (
             <div
               key={idx}
-              className={`${styles.dayCell} ${!cell.isCurrentMonth ? styles.otherMonthDay : ''} ${
-                isToday ? styles.todayCell : ''
-              }`}
+              className={`${styles.dayCell} ${!cell.isCurrentMonth ? styles.otherMonthDay : ''} ${isToday ? styles.todayCell : ''} ${important.length > 0 && cell.isCurrentMonth ? styles.hasImportant : ''
+                }`}
               onClick={() => setSelectedDayDate(cell.date)}
             >
               <div className={styles.cellHeader}>
                 <span className={`${styles.dayNum} ${isToday ? styles.todayNum : ''}`}>
                   {cell.date.getDate()}
                 </span>
-                {cellTasks.length > 0 && (
-                  <span className={styles.taskCount}>{cellTasks.length}</span>
-                )}
               </div>
 
-              <div className={styles.badgeList}>
-                {cellTasks.map((t) => (
-                  <span
-                    key={t.id}
-                    className={`${styles.cellBadge} ${styles.taskBadge} ${t.completed ? styles.taskCompleted : ''}`}
-                  >
-                    {t.completed ? '✅' : '⏰'} {t.title}
-                    <span className={styles.taskTime}>{t.startTime || t.time}</span>
-                  </span>
-                ))}
-                {cellGoals.map((g) => (
-                  <span key={g.id} className={`${styles.cellBadge} ${styles.goalBadge}`}>
-                    🎯 {g.title}
-                  </span>
-                ))}
-                {cellEntries.map((e) => (
-                  <span key={e.id} className={`${styles.cellBadge} ${styles.journalBadge}`}>
-                    📖 {e.title}
-                  </span>
-                ))}
-                {cellNotes.map((n, i) => (
-                  <span key={i} className={`${styles.cellBadge} ${styles.habitBadge}`}>
-                    📝 {n}
-                  </span>
-                ))}
+              <div className={styles.cellBody}>
+                {important.length > 0 && cell.isCurrentMonth && (
+                  <div className={styles.importantList}>
+                    {important.slice(0, 2).map((item) => (
+                      <span key={item.key} className={styles.importantLine}>
+                        {item.label}
+                      </span>
+                    ))}
+                    {important.length > 2 && (
+                      <span className={styles.importantMore}>+{important.length - 2}</span>
+                    )}
+                  </div>
+                )}
+
+                {secondaryParts.length > 0 && (
+                  <div className={styles.secondarySummary}>{secondaryParts.join(' · ')}</div>
+                )}
               </div>
             </div>
           );
@@ -196,99 +262,128 @@ export function CalendarPage() {
       <Modal
         isOpen={Boolean(selectedDayDate)}
         onClose={() => setSelectedDayDate(null)}
-        title={selectedDayDate ? `Schedule details for ${selectedDayDate.toDateString()}` : ''}
+        title={
+          selectedDayDate
+            ? selectedDayDate.toLocaleDateString('en-US', {
+              weekday: 'long',
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric'
+            })
+            : ''
+        }
       >
         {selectedDayItems && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {/* Tasks for this day */}
-            <div className={styles.modalSection}>
-              <span className={styles.modalSecTitle}>
-                <CheckCircle size={14} /> Scheduled Tasks
+          <div className={styles.modalBody}>
+            {/* Important — holidays + birthdays/festivals you've added.
+                Primary section, shown first. */}
+            <div className={styles.modalImportantSection}>
+              <span className={styles.modalCleanHeader}>
+                <Star size={13} />
+                Important
               </span>
-              {selectedDayItems.tasks.length > 0 ? (
-                selectedDayItems.tasks.map((t) => (
-                  <div key={t.id} className={`${styles.modalItem} ${styles.modalTaskItem}`}>
-                    <div className={styles.modalTaskHeader}>
-                      <span className={`${styles.modalTaskStatus} ${t.completed ? styles.modalTaskDone : styles.modalTaskPending}`}>
-                        {t.completed ? '✅ Done' : '⏳ Pending'}
-                      </span>
-                    </div>
-                    <strong>{t.title}</strong>
-                    <div className={styles.modalTaskMeta}>
-                      <Clock size={11} />
-                      <span>{t.startTime || t.time} — {t.endTime || ''}</span>
-                      <span className={styles.modalTaskDuration}>{t.duration || '1h'}</span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>No tasks scheduled for this date.</span>
-              )}
-            </div>
 
-            {/* Goals for this day */}
-            <div className={styles.modalSection}>
-              <span className={styles.modalSecTitle}>
-                <Target size={14} /> Goal Milestones
-              </span>
-              {selectedDayItems.goals.length > 0 ? (
-                selectedDayItems.goals.map((g) => (
-                  <div key={g.id} className={styles.modalItem}>
-                    <strong>{g.title}</strong> — {g.progress}% Complete ({g.category})
-                  </div>
-                ))
-              ) : (
-                <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>No goals scheduled for this date.</span>
-              )}
-            </div>
-
-            {/* Journal Entries for this day */}
-            <div className={styles.modalSection}>
-              <span className={styles.modalSecTitle}>
-                <BookOpen size={14} /> Reflections & Journal
-              </span>
-              {selectedDayItems.entries.length > 0 ? (
-                selectedDayItems.entries.map((e) => (
-                  <div key={e.id} className={styles.modalItem}>
-                    <strong>{e.title}</strong> ({e.mood}) — {e.content}
-                  </div>
-                ))
-              ) : (
-                <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>Your journal is empty for this date.</span>
-              )}
-            </div>
-
-            {/* Daily Notes */}
-            <div className={styles.modalSection}>
-              <span className={styles.modalSecTitle}>
-                <StickyNote size={14} /> Daily Notes
-              </span>
-              {selectedDayItems.notes.map((n, i) => (
-                <div key={i} className={styles.modalItem}>
-                  {n}
+              {selectedDayItems.important.length > 0 ? (
+                <div className={styles.modalImportantChips}>
+                  {selectedDayItems.important.map((item) => (
+                    <span
+                      key={item.key}
+                      className={`${styles.modalImportantChip} ${item.kind === 'holiday' ? styles.modalImportantChipHoliday : styles.modalImportantChipNote
+                        }`}
+                    >
+                      {item.kind === 'holiday' ? <Star size={11} /> : <Gift size={11} />}
+                      {item.label}
+                    </span>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                <span className={styles.modalEmptyText}>Nothing marked for this date yet.</span>
+              )}
 
-              <form onSubmit={handleAddDayNote} style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+              <form onSubmit={handleAddDayNote} className={styles.eventForm}>
                 <input
                   type="text"
-                  placeholder="Add note for this day..."
+                  placeholder="e.g. Sam's birthday, anniversary…"
                   value={newNoteInput}
                   onChange={(e) => setNewNoteInput(e.target.value)}
-                  style={{
-                    flex: 1,
-                    backgroundColor: 'var(--bg-input)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '8px',
-                    padding: '8px 12px',
-                    fontSize: '13px',
-                    color: 'var(--text-main)'
-                  }}
+                  className={styles.eventInput}
                 />
                 <Button type="submit" size="sm" variant="primary" icon={Plus}>
                   Add
                 </Button>
               </form>
+            </div>
+
+            {/* Tasks for this day */}
+            <div className={styles.modalCleanSection}>
+              <span className={styles.modalCleanHeader}>
+                <CheckCircle size={13} />
+                Tasks
+              </span>
+              {selectedDayItems.tasks.length > 0 ? (
+                selectedDayItems.tasks.map((t) => (
+                  <div key={t.id} className={styles.modalRow}>
+                    {t.completed ? (
+                      <CheckCircle size={15} className={`${styles.modalRowIcon} ${styles.modalRowIconDone}`} />
+                    ) : (
+                      <Circle size={15} className={styles.modalRowIcon} />
+                    )}
+                    <span className={`${styles.modalRowTitle} ${t.completed ? styles.modalRowTitleDone : ''}`}>
+                      {t.title}
+                    </span>
+                    <span className={styles.modalRowTime}>
+                      {t.startTime || t.time}{t.endTime ? ` – ${t.endTime}` : ''}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <span className={styles.modalEmptyText}>No tasks scheduled for this date.</span>
+              )}
+            </div>
+
+            {/* Scheduled Events for this day */}
+            <div className={styles.modalCleanSection}>
+              <span className={styles.modalCleanHeader}>
+                <Sparkles size={13} />
+                Events
+              </span>
+              {selectedDayItems.events.length > 0 ? (
+                selectedDayItems.events.map((ev) => (
+                  <div key={ev.id} className={styles.modalRow}>
+                    <Sparkles size={15} className={styles.modalRowIcon} />
+                    <span className={styles.modalRowTitle}>{ev.title}</span>
+                    {ev.allDay ? (
+                      <span className={styles.modalRowTag}>All day</span>
+                    ) : (
+                      <span className={styles.modalRowTime}>
+                        {ev.startTime || ev.time}{ev.endTime ? ` – ${ev.endTime}` : ''}
+                      </span>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <span className={styles.modalEmptyText}>No scheduled events for this date.</span>
+              )}
+            </div>
+
+            {/* Journal Entries for this day */}
+            <div className={styles.modalCleanSection}>
+              <span className={styles.modalCleanHeader}>
+                <BookOpen size={13} />
+                Notes
+              </span>
+              {selectedDayItems.entries.length > 0 ? (
+                selectedDayItems.entries.map((e) => (
+                  <div key={e.id} className={styles.modalRow}>
+                    <BookOpen size={15} className={styles.modalRowIcon} />
+                    <span className={styles.modalRowTitle}>
+                      {e.title} <span className={styles.modalRowMuted}>· {e.mood}</span>
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <span className={styles.modalEmptyText}>Your journal is empty for this date.</span>
+              )}
             </div>
           </div>
         )}

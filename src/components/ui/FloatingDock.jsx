@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   Calendar as CalendarIcon,
   BookOpen,
-  Target,
   CheckSquare,
   MessageSquare
 } from 'lucide-react';
@@ -13,8 +12,7 @@ export function FloatingDock() {
   const dockItems = [
     { label: 'Dashboard', path: '/app/dashboard', icon: LayoutDashboard },
     { label: 'Calendar', path: '/app/calendar', icon: CalendarIcon },
-    { label: 'Journal', path: '/app/journal', icon: BookOpen },
-    { label: 'Goals', path: '/app/goals', icon: Target },
+    { label: 'Notes', path: '/app/journal', icon: BookOpen },
     { label: 'Habits', path: '/app/habits', icon: CheckSquare },
     { label: 'Chatbot', path: '/app/chatbot', icon: MessageSquare }
   ];

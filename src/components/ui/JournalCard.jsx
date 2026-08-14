@@ -1,20 +1,39 @@
-import { Calendar, ArrowRight, Edit3, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRight, Edit3, Trash2 } from 'lucide-react';
+import { MOOD_META } from './journalMoods';
 import styles from '../../styles/JournalCard.module.css';
 
-export function JournalCard({ entry, onClick, onEdit, onDelete }) {
-  const { id, title, content, mood, category, date, time } = entry;
+export function JournalCard({ entry, index = 0, onClick, onEdit, onDelete }) {
+  const { id, title, content, mood, date, time } = entry;
+  const meta = MOOD_META[mood] || MOOD_META.Neutral;
+  const Icon = meta.icon;
+  const [removing, setRemoving] = useState(false);
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    if (removing) return;
+    setRemoving(true);
+    // Let the shrink/fade play out before it actually leaves the list.
+    setTimeout(() => onDelete && onDelete(id), 220);
+  };
 
   return (
-    <div className={styles.card} onClick={() => onClick && onClick(entry)}>
+    <div
+      className={`${styles.card} ${removing ? styles.cardRemoving : ''}`}
+      style={{
+        '--mood-color': meta.color,
+        animationDelay: `${Math.min(index, 12) * 45}ms`
+      }}
+      onClick={() => !removing && onClick && onClick(entry)}
+    >
       <div className={styles.header}>
-        <div className={styles.dateInfo}>
-          <Calendar size={12} />
-          <span>{date} • {time}</span>
-        </div>
-        <div className={styles.badges}>
-          <span className={styles.moodTag}>{mood}</span>
-          <span className={styles.categoryBadge}>{category}</span>
-        </div>
+        <span className={styles.dateInfo}>{date} · {time}</span>
+        <span
+          className={styles.moodChip}
+          style={{ backgroundColor: `${meta.color}22`, borderColor: `${meta.color}55`, color: meta.color }}
+        >
+          <Icon size={12} /> {meta.label}
+        </span>
       </div>
 
       <h4 className={styles.title}>{title}</h4>
@@ -22,16 +41,16 @@ export function JournalCard({ entry, onClick, onEdit, onDelete }) {
 
       <div className={styles.footer}>
         <span className={styles.readMore}>
-          Read Entry <ArrowRight size={12} />
+          Read entry <ArrowRight size={12} />
         </span>
         <div className={styles.actions} onClick={(e) => e.stopPropagation()}>
           {onEdit && (
-            <button className={styles.iconBtn} onClick={() => onEdit(entry)} title="Edit Entry">
+            <button className={styles.iconBtn} onClick={() => onEdit(entry)} title="Edit entry">
               <Edit3 size={14} />
             </button>
           )}
           {onDelete && (
-            <button className={`${styles.iconBtn} ${styles.delete}`} onClick={() => onDelete(id)} title="Delete Entry">
+            <button className={`${styles.iconBtn} ${styles.delete}`} onClick={handleDelete} title="Delete entry">
               <Trash2 size={14} />
             </button>
           )}

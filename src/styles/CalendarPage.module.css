@@ -143,33 +143,164 @@
   border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
-/* Day Detail Modal Styling */
+/* Event badge (birthdays, anniversaries, anything marked for a day) —
+   a distinct pink/party accent so it reads apart from tasks/goals/journal. */
+.eventBadge {
+  background-color: rgba(236, 72, 153, 0.12);
+  color: #ec4899;
+  border: 1px solid rgba(236, 72, 153, 0.25);
+}
+
+/* Scheduled-event badge — for real Event-type items created from the
+   dashboard's Event/Task toggle (as opposed to the quick day-notes above).
+   Given a bolder gradient fill so it visibly "pops" apart from a regular
+   task badge on the month grid, per the highlight request. */
+.scheduledEventBadge {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.28), rgba(168, 85, 247, 0.22));
+  color: #ec4899;
+  border: 1px solid rgba(236, 72, 153, 0.45);
+  font-weight: 700;
+  box-shadow: 0 0 0 1px rgba(236, 72, 153, 0.12) inset;
+}
+
+/* Day Detail Modal Styling — each section is its own soft card instead of
+   a flat divider-separated list, with a small colored icon chip per
+   section so Tasks / Journal / Events read apart from each other at a
+   glance. */
 .modalSection {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  border-bottom: 1px solid var(--border-subtle);
-  padding-bottom: 14px;
+  gap: 10px;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px 16px;
 }
 
 .modalSecTitle {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-dim);
+  color: var(--text-muted);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+}
+
+.modalSecIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  flex-shrink: 0;
+}
+
+.modalSecIconTask {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.modalSecIconJournal {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: var(--warning);
+}
+
+.modalSecIconEvent {
+  background-color: rgba(236, 72, 153, 0.15);
+  color: #ec4899;
+}
+
+/* Icon chip for the "Scheduled Events" section — same pink family as
+   modalSecIconEvent but with the gradient treatment to match
+   scheduledEventBadge above. */
+.modalSecIconScheduled {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(168, 85, 247, 0.25));
+  color: #ec4899;
+}
+
+.modalEmptyText {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-style: italic;
 }
 
 .modalItem {
-  background-color: var(--bg-input);
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   padding: 10px 14px;
   border-radius: var(--radius-md);
   font-size: 13px;
   color: var(--text-main);
+}
+
+/* Scheduled-event item card in the day modal — highlighted with a
+   gradient wash + dashed accent border so it's visually distinct from a
+   plain task item. */
+.modalScheduledEventItem {
+  border-left: 3px dashed #ec4899;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.08), transparent 70%);
+}
+
+/* Small "All day" pill shown on all-day scheduled events */
+.allDayTag {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #ec4899;
+  background-color: rgba(236, 72, 153, 0.14);
+  border-radius: 999px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+
+/* Event list + add-event row */
+.eventList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.eventItem {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid #ec4899;
+  border-radius: var(--radius-md);
+  padding: 9px 12px;
+  font-size: 13px;
+  color: var(--text-main);
+}
+
+.eventItemIcon {
+  flex-shrink: 0;
+  color: #ec4899;
+}
+
+.eventForm {
+  display: flex;
+  gap: 8px;
+}
+
+.eventInput {
+  flex: 1;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.eventInput:focus {
+  border-color: #ec4899;
 }
 
 /* Task badge in day cell */
@@ -262,18 +393,235 @@
   margin-left: auto;
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   Cell body & Important-event highlights on the month grid
+   ═══════════════════════════════════════════════════════════════════ */
+
+.cellBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.importantList {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Full-line highlight — entire row filled with the site's primary color */
+.importantLine {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: var(--primary);
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  display: block;
+}
+
+.importantMore {
+  font-size: 9px;
+  color: var(--primary);
+  font-weight: 600;
+  padding-left: 7px;
+}
+
+.secondarySummary {
+  font-size: 9px;
+  color: var(--text-dim);
+  font-weight: 500;
+  margin-top: auto;
+  padding-top: 2px;
+  line-height: 1.3;
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   Day-detail modal — clean, minimal redesign
+   ═══════════════════════════════════════════════════════════════════ */
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* Important section at the top — slightly elevated */
+.modalImportantSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modalImportantChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.modalImportantChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 11px;
+  border-radius: 999px;
+  line-height: 1;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.modalImportantChip:hover {
+  transform: translateY(-1px);
+}
+
+.modalImportantChipHoliday {
+  background-color: rgba(251, 191, 36, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.22);
+}
+
+.modalImportantChipHoliday:hover {
+  box-shadow: 0 2px 8px -2px rgba(251, 191, 36, 0.3);
+}
+
+.modalImportantChipNote {
+  background-color: rgba(244, 114, 182, 0.10);
+  color: #f472b6;
+  border: 1px solid rgba(244, 114, 182, 0.20);
+}
+
+.modalImportantChipNote:hover {
+  box-shadow: 0 2px 8px -2px rgba(244, 114, 182, 0.3);
+}
+
+/* Generic section container (tasks, events, journal) */
+.modalCleanSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Section headers — quiet uppercase labels */
+.modalCleanHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-dim);
+  padding-bottom: 2px;
+}
+
+/* Individual item row */
+.modalRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.modalRow:hover {
+  background-color: var(--bg-card-hover);
+  border-color: var(--border-color);
+}
+
+.modalRowIcon {
+  flex-shrink: 0;
+  color: var(--text-dim);
+  opacity: 0.7;
+}
+
+.modalRowIconDone {
+  color: var(--success);
+  opacity: 1;
+}
+
+.modalRowTitle {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-main);
+  font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modalRowTitleDone {
+  text-decoration: line-through;
+  opacity: 0.45;
+}
+
+.modalRowTime {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 500;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.modalRowTag {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--primary);
+  background-color: var(--primary-light);
+  border-radius: 999px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+
+.modalRowMuted {
+  color: var(--text-dim);
+  font-weight: 400;
+  font-size: 12px;
+}
+
 @media (max-width: 768px) {
   .dayCell {
     min-height: 70px;
     padding: 4px;
   }
+
   .weekdayHeader {
     padding: 8px 4px;
     font-size: 10px;
   }
+
   .cellBadge {
     font-size: 9px;
     padding: 1px 4px;
+  }
+
+  .importantBadge {
+    font-size: 9px;
+    padding: 1px 5px;
+  }
+
+  .modalRow {
+    padding: 7px 10px;
+    gap: 8px;
+  }
+
+  .modalRowTitle {
+    font-size: 12px;
   }
 }
 
@@ -284,7 +632,7 @@
     align-items: center;
     justify-content: flex-start;
   }
-  
+
   .cellHeader {
     justify-content: center;
     width: 100%;
@@ -300,6 +648,39 @@
   .taskCount {
     display: none;
   }
+
+  .importantIndicator {
+    display: none;
+  }
+
+  .importantList {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3px;
+    width: 100%;
+  }
+
+  /* On tiny screens collapse to just a small colored dot */
+  .importantLine {
+    width: 6px;
+    height: 6px;
+    min-width: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+    border-left: none;
+    padding: 0;
+    font-size: 0;
+    text-indent: -9999px;
+    overflow: hidden;
+    display: inline-block;
+  }
+
+  .secondarySummary {
+    display: none;
+  }
+
+
 
   .badgeList {
     flex-direction: row;
@@ -337,5 +718,23 @@
   .habitBadge {
     background-color: var(--success) !important;
   }
-}
 
+  .eventBadge {
+    background-color: #ec4899 !important;
+  }
+
+  .scheduledEventBadge {
+    background: #ec4899 !important;
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.6) !important;
+  }
+
+  .modalImportantChip {
+    font-size: 11px;
+    padding: 4px 9px;
+  }
+
+  .modalRow {
+    padding: 7px 8px;
+    gap: 6px;
+  }
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useUserStore } from '../../hooks/useUserStore';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
 import { FloatingDock } from '../ui/FloatingDock';
@@ -12,14 +13,15 @@ import styles from '../../styles/ProtectedLayout.module.css';
 
 export function ProtectedLayout() {
   const { isAuthenticated, user, updateAccountInfo } = useAuth();
+  const store = useUserStore();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   // Profile Onboarding State
   const needsProfileSetup = isAuthenticated && user && !user.hasCompletedProfile;
-  const [setupName, setSetupName] = useState(user?.name || '');
-  const [setupAge, setSetupAge] = useState(user?.age || '');
+  const [setupTimelineStart, setSetupTimelineStart] = useState(user?.settings?.timelineStart || '07:00');
+  const [setupTimelineEnd, setSetupTimelineEnd] = useState(user?.settings?.timelineEnd || '22:00');
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -27,8 +29,12 @@ export function ProtectedLayout() {
 
   const handleProfileSetupSubmit = (e) => {
     e.preventDefault();
-    if (!setupName.trim() || !setupAge) return;
-    updateAccountInfo(setupName.trim(), setupAge, user?.email);
+    if (!setupTimelineStart || !setupTimelineEnd) return;
+    store.updateSettings({
+      timelineStart: setupTimelineStart,
+      timelineEnd: setupTimelineEnd
+    });
+    updateAccountInfo(user?.name || 'User', user?.age || 20, user?.email);
   };
 
   return (
@@ -65,7 +71,7 @@ export function ProtectedLayout() {
       {/* Floating AI Chat Assistant Widget */}
       <FloatingChatWidget />
 
-      {/* First-Time Name & Age Setup Modal */}
+      {/* First-Time Timeline Setup Modal */}
       <Modal
         isOpen={Boolean(needsProfileSetup)}
         onClose={() => {}}
@@ -75,19 +81,22 @@ export function ProtectedLayout() {
           <div style={{ textAlign: 'center', marginBottom: '8px' }}>
             <Star size={28} fill="currentColor" style={{ color: 'var(--primary)', marginBottom: '8px' }} />
             <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-              Please enter your name and age to personalize your workspace.
+              Set your preferred workspace hours. This timeline will define the hourly slots on your calendar.
             </p>
           </div>
 
           <div>
             <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '6px' }}>
-              Your Name
+              Timeline Start
             </label>
-            <input
-              type="text"
-              placeholder="e.g. Manat"
-              value={setupName}
-              onChange={(e) => setSetupName(e.target.value)}
+            <select
+              value={setupTimelineStart}
+              onChange={(e) => {
+                setSetupTimelineStart(e.target.value);
+                const sh = parseInt(e.target.value.split(':')[0], 10);
+                const eh = parseInt(setupTimelineEnd.split(':')[0], 10);
+                if (eh <= sh) setSetupTimelineEnd(`${String(sh + 1).padStart(2, '0')}:00`);
+              }}
               required
               style={{
                 width: '100%',
@@ -96,22 +105,24 @@ export function ProtectedLayout() {
                 borderRadius: '8px',
                 padding: '10px 14px',
                 color: 'var(--text-main)',
-                fontSize: '14px'
+                fontSize: '14px',
+                outline: 'none'
               }}
-            />
+            >
+              {Array.from({ length: 24 }, (_, i) => {
+                const h = String(i).padStart(2, '0') + ':00';
+                return <option key={h} value={h}>{h}</option>;
+              })}
+            </select>
           </div>
 
           <div>
             <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '6px' }}>
-              Your Age
+              Timeline End
             </label>
-            <input
-              type="number"
-              placeholder="e.g. 19"
-              value={setupAge}
-              onChange={(e) => setSetupAge(e.target.value)}
-              min="10"
-              max="120"
+            <select
+              value={setupTimelineEnd}
+              onChange={(e) => setSetupTimelineEnd(e.target.value)}
               required
               style={{
                 width: '100%',
@@ -120,9 +131,20 @@ export function ProtectedLayout() {
                 borderRadius: '8px',
                 padding: '10px 14px',
                 color: 'var(--text-main)',
-                fontSize: '14px'
+                fontSize: '14px',
+                outline: 'none'
               }}
-            />
+            >
+              {Array.from({ length: 24 }, (_, i) => {
+                const h = String(i).padStart(2, '0') + ':00';
+                const sh = parseInt(setupTimelineStart.split(':')[0], 10);
+                return (
+                  <option key={h} value={h} disabled={i <= sh}>
+                    {h}
+                  </option>
+                );
+              })}
+            </select>
           </div>
 
           <Button type="submit" variant="primary" size="lg" fullWidth icon={ArrowRight}>

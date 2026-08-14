@@ -1,4 +1,5 @@
-:root, [data-theme="dark"] {
+:root,
+[data-theme="dark"] {
   /* Color Palette - Dimensional Dark Theme */
   --bg-main: #050507;
   --bg-sidebar: #0a0a0d;
@@ -11,12 +12,21 @@
   --bg-sunken: #08080a;
 
   /* Primary & Secondary Accents */
-  --primary: #EB9D86;
-  --primary-hover: #D4826A;
-  --primary-light: rgba(235, 157, 134, 0.15);
-  --secondary: #F2BDA8;
-  --secondary-hover: #EB9D86;
-  --secondary-light: rgba(242, 189, 168, 0.15);
+  --primary: #A9CDF2;
+  --primary-hover: #8FBBEA;
+  --primary-light: rgba(169, 205, 242, 0.15);
+  --secondary: #C7DFF7;
+  --secondary-hover: #A9CDF2;
+  --secondary-light: rgba(199, 223, 247, 0.15);
+
+  /* Deeper blue for readable text/links — --primary itself is too pale to
+     read as running text on either background. */
+  --primary-text: #5C97DE;
+
+  /* Text color for use ON TOP of primary/secondary backgrounds (they're light,
+     so this stays a fixed dark navy in both themes rather than following
+     --text-main, which flips to white in dark mode). */
+  --on-primary: #14213D;
 
   /* Functional Status Colors */
   --success: #10b981;
@@ -32,15 +42,15 @@
   /* Structural Borders & Shadows — layered for depth */
   --border-color: #222226;
   --border-subtle: #1a1a1e;
-  --border-focus: #EB9D86;
+  --border-focus: #A9CDF2;
 
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.03);
   --shadow-md: 0 4px 16px -2px rgba(0, 0, 0, 0.8), 0 2px 6px -1px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
   --shadow-lg: 0 12px 32px -6px rgba(0, 0, 0, 0.9), 0 8px 16px -4px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
 
-  /* Inner glow for cards (warm accent-tinted) */
+  /* Inner glow for cards (accent-tinted) */
   --glow-card: inset 0 1px 0 0 rgba(255, 255, 255, 0.04), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
-  --glow-primary: 0 0 20px -4px rgba(235, 157, 134, 0.2);
+  --glow-primary: 0 0 20px -4px rgba(169, 205, 242, 0.35);
 
   /* Border Radius System */
   --radius-sm: 6px;
@@ -79,12 +89,19 @@
   --bg-sunken: #f0f0f2;
 
   /* Primary & Secondary Accents */
-  --primary: #EB9D86;
-  --primary-hover: #D4826A;
-  --primary-light: rgba(235, 157, 134, 0.12);
-  --secondary: #F2BDA8;
-  --secondary-hover: #EB9D86;
-  --secondary-light: rgba(242, 189, 168, 0.15);
+  --primary: #4C82C9;
+  --primary-hover: #3E6FBF;
+  --primary-light: rgba(76, 130, 201, 0.12);
+  --secondary: #7FA8D9;
+  --secondary-hover: #4C82C9;
+  --secondary-light: rgba(127, 168, 217, 0.18);
+
+  --primary-text: #3E6FBF;
+
+  /* Primary here is a medium blue (not pale), so white reads fine on it. */
+  --on-primary: #FFFFFF;
+
+  --on-primary: #14213D;
 
   /* Functional Status Colors */
   --success: #10b981;
@@ -100,7 +117,7 @@
   /* Structural Borders & Shadows */
   --border-color: #e4e4e7;
   --border-subtle: #f4f4f5;
-  --border-focus: #EB9D86;
+  --border-focus: #4C82C9;
 
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
