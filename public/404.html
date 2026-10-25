@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DreamScape</title>
+  <script>
+    // Redirect 404s to index.html for SPA routing on GitHub Pages
+    const path = window.location.pathname;
+    const repo = '/DreamScape';
+    if (path.startsWith(repo)) {
+      const route = path.slice(repo.length);
+      sessionStorage.setItem('redirect', route || '/');
+      window.location.replace(repo + '/');
+    }
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>
