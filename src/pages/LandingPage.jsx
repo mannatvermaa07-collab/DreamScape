@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
   Star,
-  Sparkles,
   Flame,
   BookOpen,
   Calendar,
@@ -21,37 +20,32 @@ const FEATURES = [
   {
     icon: Flame,
     title: 'Habits',
-    description: 'Show up daily. Streaks track consistency, not just good intentions.',
-    bg: '#FDECF1',
-    accent: '#E0699B'
+    description: 'Build consistency with daily streaks that hold you accountable.',
+    accent: '#C7566F'
   },
   {
     icon: BookOpen,
     title: 'Notes',
-    description: 'Capture thoughts, track moods, and review your personal growth over time.',
-    bg: '#EAF7EB',
-    accent: '#57A66E'
+    description: 'Capture your thoughts, reflections, and ideas in one place.',
+    accent: '#4A8C5E'
   },
   {
     icon: Calendar,
     title: 'Timeline',
-    description: 'Your week, laid out honestly \u2014 what\u2019s planned, what\u2019s done, what slipped.',
-    bg: '#E9F1FD',
-    accent: '#4C82C9'
+    description: 'See your week clearly — what\'s planned, done, and what slipped.',
+    accent: '#4878A8'
   },
   {
     icon: Brain,
-    title: 'AI copilot',
-    description: 'Ask for a plan, a nudge, or a gut check. It already knows your goals.',
-    bg: '#F3ECFB',
-    accent: '#8862C7'
+    title: 'AI Copilot',
+    description: 'Get nudges, plans, and check-ins tailored to your goals.',
+    accent: '#7B5EA7'
   },
   {
     icon: TrendingUp,
     title: 'Progress',
-    description: 'Momentum you can point to \u2014 completion rates, trends, quiet wins.',
-    bg: '#FDF6DE',
-    accent: '#C99A2E'
+    description: 'Track completion rates and trends to see how far you\'ve come.',
+    accent: '#A88C3E'
   }
 ];
 
@@ -90,35 +84,6 @@ function easeInOutCubic(x) {
   return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 }
 
-// Fixed-but-scattered star positions so the sky doesn't re-shuffle on re-render.
-const STARS = [
-  { top: '8%', left: '12%', sd: '0s', so: 0.8 },
-  { top: '15%', left: '82%', sd: '0.6s', so: 0.6 },
-  { top: '28%', left: '48%', sd: '1.1s', so: 0.7 },
-  { top: '40%', left: '6%', sd: '1.7s', so: 0.5 },
-  { top: '35%', left: '92%', sd: '0.3s', so: 0.9 },
-  { top: '55%', left: '20%', sd: '2.1s', so: 0.6 },
-  { top: '62%', left: '70%', sd: '0.9s', so: 0.7 },
-  { top: '75%', left: '40%', sd: '1.4s', so: 0.5 },
-  { top: '80%', left: '88%', sd: '1.9s', so: 0.8 },
-  { top: '18%', left: '60%', sd: '2.4s', so: 0.6 }
-];
-
-const SPARK_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315];
-
-// Scattered stars/sparkles for background flavor — fixed positions, never move.
-const DECOR_MARKS = [
-  { top: '10%', left: '6%', char: '✦', size: '18px', rotate: '-8deg', color: '#CCE4FF', opacity: 0.55 },
-  { top: '6%', left: '46%', char: '✺', size: '13px', rotate: '10deg', color: '#B78C3F', opacity: 0.4 },
-  { top: '22%', left: '92%', char: '○', size: '15px', rotate: '0deg', color: '#5C7C93', opacity: 0.4 },
-  { top: '48%', left: '3%', char: '✦', size: '12px', rotate: '14deg', color: '#6D8F61', opacity: 0.4 },
-  { top: '68%', left: '95%', char: '✺', size: '20px', rotate: '-14deg', color: '#8B689B', opacity: 0.4 },
-  { top: '80%', left: '10%', char: '◇', size: '14px', rotate: '8deg', color: '#D2665F', opacity: 0.4 },
-  { top: '88%', left: '55%', char: '✦', size: '16px', rotate: '-6deg', color: '#CCE4FF', opacity: 0.55 },
-  { top: '34%', left: '80%', char: '○', size: '10px', rotate: '0deg', color: '#6D8F61', opacity: 0.35 },
-  { top: '58%', left: '38%', char: '✺', size: '11px', rotate: '20deg', color: '#5C7C93', opacity: 0.3 }
-];
-
 export function LandingPage() {
   const navigate = useNavigate();
   const { startDemo } = useAuth();
@@ -135,7 +100,6 @@ export function LandingPage() {
 
   const [loaded, setLoaded] = useState(false);
   const [selectedDay, setSelectedDay] = useState(3);
-  const [burst, setBurst] = useState(0);
 
   // Which of the two overlapping hero cards is currently on top.
   const [frontCard, setFrontCard] = useState('week');
@@ -184,7 +148,6 @@ export function LandingPage() {
   const toggleTheme = () => {
     const next = !dark;
     animateTo(next ? 0 : 1);
-    setBurst((b) => b + 1);
     toggleGlobalTheme();
   };
 
@@ -197,45 +160,11 @@ export function LandingPage() {
 
   return (
     <div ref={pageRef} className={`${styles.page} ${loaded ? styles.loaded : ''} ${dark ? styles.dark : ''}`}>
-      <div className={styles.auroraField} aria-hidden="true">
-        <span className={styles.auroraBlob} />
-        <span className={styles.auroraBlob} />
-        <span className={styles.auroraBlob} />
-      </div>
-      <div className={styles.decorField} aria-hidden="true">
-        {DECOR_MARKS.map((m, i) => (
-          <span
-            key={i}
-            className={styles.decorMark}
-            style={{
-              top: m.top,
-              left: m.left,
-              '--s': m.size,
-              '--r': m.rotate,
-              '--c': m.color,
-              '--o': m.opacity
-            }}
-          >
-            {m.char}
-          </span>
-        ))}
-      </div>
-      <div className={styles.grainOverlay} aria-hidden="true" />
-
-      <div className={styles.starField} aria-hidden="true">
-        {STARS.map((s, i) => (
-          <span
-            key={i}
-            className={styles.star}
-            style={{ top: s.top, left: s.left, '--sd': s.sd, '--so': s.so }}
-          />
-        ))}
-      </div>
 
       <header className={styles.header}>
         <div className={styles.brand}>
           <span className={styles.logoMark}>
-            <Star size={23} fill="currentColor" strokeWidth={0} />
+            <Star size={20} fill="currentColor" strokeWidth={0} />
           </span>
           DreamScape
         </div>
@@ -250,22 +179,6 @@ export function LandingPage() {
               <span className={`${styles.themeIcon} ${styles.themeIconSun}`}><Sun size={17} /></span>
               <span className={`${styles.themeIcon} ${styles.themeIconMoon}`}><Moon size={16} /></span>
             </span>
-            {burst > 0 &&
-              SPARK_ANGLES.map((angle, i) => {
-                const rad = (angle * Math.PI) / 180;
-                const dist = 20;
-                return (
-                  <span
-                    key={`${burst}-${i}`}
-                    className={styles.burstSpark}
-                    style={{
-                      '--tx': `${Math.cos(rad) * dist}px`,
-                      '--ty': `${Math.sin(rad) * dist}px`,
-                      '--spark-color': dark ? '#F3EAE3' : 'var(--accent)'
-                    }}
-                  />
-                );
-              })}
           </button>
           <button className={styles.navLink} onClick={() => navigate('/login')}>Sign in</button>
         </div>
@@ -274,25 +187,21 @@ export function LandingPage() {
       <main className={styles.main}>
         <div className={styles.heroGrid}>
           <section className={styles.heroLeft}>
-            <span className={styles.heroGlow} aria-hidden="true" />
-            <p className={styles.eyebrow}>
-              <Sparkles size={12} className={styles.eyebrowSpark} />
-              A quieter way to build a life
-            </p>
+            <p className={styles.eyebrow}>Your personal workspace</p>
             <h1 className={styles.heroTitle}>
-              <span className={styles.heroLine}><span>Turn what you imagine</span></span>
-              <span className={styles.heroLine}><span>into <em className={styles.heroAccent}>what you do</em>.</span></span>
+              <span className={styles.heroLine}><span>Organize your days,</span></span>
+              <span className={styles.heroLine}><span>build <em className={styles.heroAccent}>real habits</em>.</span></span>
             </h1>
             <p className={styles.heroSubtitle}>
-              Habits, notes, and your week — one calm workspace, no noise.
+              A calm space to track habits, write notes, and plan your week — without the clutter.
             </p>
             <div className={styles.heroActions}>
               <button className={styles.primaryBtn} onClick={() => navigate('/register')}>
-                Start for free
+                Get started
                 <ArrowRight size={16} />
               </button>
               <button className={styles.ghostBtn} onClick={handleDemo}>
-                Explore the demo
+                Try the demo
               </button>
             </div>
           </section>
@@ -374,24 +283,23 @@ export function LandingPage() {
           </section>
         </div>
 
-        {/* Features as compact, pastel cards — the copy is written out so
-            nothing needs a hover to be understood. */}
+        {/* Features as clean, static cards */}
         <section className={styles.journey}>
           <div className={styles.featuresGrid}>
             {FEATURES.map((f) => {
               const Icon = f.icon;
               return (
-                <button
+                <div
                   key={f.title}
                   className={styles.featureCard}
-                  style={{ '--f-bg': f.bg, '--f-accent': f.accent }}
+                  style={{ '--f-accent': f.accent }}
                 >
                   <span className={styles.featureIconWrap}>
                     <Icon size={15} strokeWidth={1.7} />
                   </span>
                   <h3 className={styles.featureTitle}>{f.title}</h3>
                   <p className={styles.featureDesc}>{f.description}</p>
-                </button>
+                </div>
               );
             })}
           </div>

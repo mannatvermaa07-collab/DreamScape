@@ -1,70 +1,106 @@
-import { useState } from 'react';
-import { Bot, Send, Sparkles, User } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Bot, Send, Sparkles, RotateCcw } from 'lucide-react';
+import { sendMessage, resetChat } from '../lib/gemini';
 import { Button } from '../components/ui/Button';
 import styles from '../styles/ChatbotPage.module.css';
 
 const SUGGESTED_PROMPTS = [
-  "How can I break down my long-term engineering goal?",
-  "Tips to increase my daily habit streak compliance",
-  "Summarize effective reflective journaling strategies",
-  "How to avoid cognitive fatigue during deep work"
+  "How do I break down a big goal into weekly steps?",
+  "I keep breaking my habit streak — any tips?",
+  "Give me 3 journaling prompts for tonight",
+  "How to stop procrastinating on hard tasks?"
 ];
 
 export function ChatbotPage() {
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'assistant',
-      text: "Greetings! I am your DreamScape AI Productivity Advisor. Ask me anything about goal milestone planning, habit formation strategies, or reflective workflows."
+      text: "Hey! I'm your DreamScape AI assistant. Ask me anything about your goals, habits, scheduling, or productivity — I'm here to help."
     }
   ]);
 
-  const handleSend = (textToSend) => {
-    const messageText = textToSend || input;
-    if (!messageText.trim()) return;
+  const chatEndRef = useRef(null);
+  const inputRef = useRef(null);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
+
+  const handleSend = async (textToSend) => {
+    const messageText = (textToSend || input).trim();
+    if (!messageText || isLoading) return;
 
     const userMsg = { id: Date.now(), sender: 'user', text: messageText };
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInput('');
+    setIsLoading(true);
 
-    setTimeout(() => {
-      let botReply = "I have analyzed your query. To maximize compounding gains, focus on 15-minute daily iterations rather than overwhelming tasks.";
-      const lower = messageText.toLowerCase();
-
-      if (lower.includes('goal') || lower.includes('break down')) {
-        botReply = "To effectively break down a major goal: 1) Define the end milestone, 2) Split into 3 micro-outcomes, 3) Attach a 14-day target date to each.";
-      } else if (lower.includes('habit') || lower.includes('streak')) {
-        botReply = "Habit compliance increases when anchored to an existing routine (Habit Stacking). Try pairing your habit with your morning coffee.";
-      } else if (lower.includes('journal') || lower.includes('reflection')) {
-        botReply = "Effective journaling relies on 3 prompts: What moved the needle today? What caused friction? What is tomorrow's single priority?";
-      }
-
+    try {
+      const response = await sendMessage(messageText);
       setMessages((prev) => [
         ...prev,
-        { id: Date.now() + 1, sender: 'assistant', text: botReply }
+        { id: Date.now() + 1, sender: 'assistant', text: response }
       ]);
-    }, 600);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          sender: 'assistant',
+          text: "Sorry, something went wrong. Please try again."
+        }
+      ]);
+    } finally {
+      setIsLoading(false);
+      inputRef.current?.focus();
+    }
   };
+
+  const handleNewChat = () => {
+    resetChat();
+    setMessages([
+      {
+        id: Date.now(),
+        sender: 'assistant',
+        text: "Fresh start! What would you like to work on?"
+      }
+    ]);
+    inputRef.current?.focus();
+  };
+
+
 
   return (
     <div className={styles.container}>
-      {/* Bot Header */}
+      {/* Header */}
       <div className={styles.header}>
         <div className={styles.botInfo}>
           <div className={styles.botAvatar}>
             <Bot size={20} />
           </div>
           <div>
-            <h3 className={styles.botTitle}>DreamScape AI Intelligence Copilot</h3>
+            <h3 className={styles.botTitle}>DreamScape AI</h3>
             <span className={styles.botStatus}>
-              <Sparkles size={12} /> Active & Ready
+              <Sparkles size={12} />
+              Active & Ready
             </span>
           </div>
         </div>
+        <button
+          className={styles.newChatBtn}
+          onClick={handleNewChat}
+          title="New conversation"
+        >
+          <RotateCcw size={16} />
+          <span>New chat</span>
+        </button>
       </div>
 
-      {/* Messages Scroll Area */}
+      {/* Messages */}
       <div className={styles.chatArea}>
         {messages.map((m) => (
           <div
@@ -73,6 +109,11 @@ export function ChatbotPage() {
               m.sender === 'user' ? styles.userRow : styles.assistantRow
             }`}
           >
+            {m.sender === 'assistant' && (
+              <div className={styles.msgAvatar}>
+                <Bot size={16} />
+              </div>
+            )}
             <div
               className={`${styles.messageContent} ${
                 m.sender === 'user' ? styles.userContent : styles.assistantContent
@@ -82,18 +123,43 @@ export function ChatbotPage() {
             </div>
           </div>
         ))}
+
+        {/* Typing indicator */}
+        {isLoading && (
+          <div className={`${styles.messageRow} ${styles.assistantRow}`}>
+            <div className={styles.msgAvatar}>
+              <Bot size={16} />
+            </div>
+            <div className={`${styles.messageContent} ${styles.assistantContent}`}>
+              <div className={styles.typingDots}>
+                <span />
+                <span />
+                <span />
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div ref={chatEndRef} />
       </div>
 
-      {/* Suggested Prompt Chips */}
-      <div className={styles.promptChips}>
-        {SUGGESTED_PROMPTS.map((p, i) => (
-          <button key={i} className={styles.chip} onClick={() => handleSend(p)}>
-            {p}
-          </button>
-        ))}
-      </div>
+      {/* Suggested prompts — only show if few messages */}
+      {messages.length <= 2 && (
+        <div className={styles.promptChips}>
+          {SUGGESTED_PROMPTS.map((p, i) => (
+            <button
+              key={i}
+              className={styles.chip}
+              onClick={() => handleSend(p)}
+              disabled={isLoading}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      )}
 
-      {/* Input Footer */}
+      {/* Input */}
       <div className={styles.inputFooter}>
         <form
           onSubmit={(e) => {
@@ -103,13 +169,15 @@ export function ChatbotPage() {
           className={styles.form}
         >
           <input
+            ref={inputRef}
             type="text"
-            placeholder="Ask AI Copilot for advice..."
+            placeholder={isLoading ? 'Thinking...' : 'Type a message...'}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className={styles.input}
+            disabled={isLoading}
           />
-          <Button type="submit" variant="primary" icon={Send}>
+          <Button type="submit" variant="primary" icon={Send} disabled={isLoading || !input.trim()}>
             Send
           </Button>
         </form>

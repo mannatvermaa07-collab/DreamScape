@@ -26,14 +26,11 @@
   height: 100dvh;
   display: flex;
   flex-direction: column;
-  background:
-    radial-gradient(ellipse 900px 600px at 88% -8%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%),
-    radial-gradient(ellipse 800px 700px at -6% 105%, color-mix(in srgb, #6D8F61 10%, transparent), transparent 60%),
-    linear-gradient(160deg, var(--paper) 0%, var(--surface) 100%);
+  background: linear-gradient(168deg, var(--paper) 0%, var(--surface) 100%);
   color: var(--ink);
   font-family: var(--font-body);
   opacity: 0;
-  transition: opacity 0.6s ease, background 0.5s ease;
+  transition: opacity 0.5s ease, background 0.4s ease;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -42,148 +39,8 @@
   --accent-strong: var(--accent);
 }
 
-/* Fallback handled globally now — .page scrolls by default when content
-   needs more room than the viewport, so no extra breakpoint needed here. */
-
 .page.loaded {
   opacity: 1;
-}
-
-/* ---- ambient night sky, only felt in dark mode ---- */
-
-.starField {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-
-.star {
-  position: absolute;
-  width: 2.5px;
-  height: 2.5px;
-  border-radius: 50%;
-  background: #FFF3E0;
-  opacity: 0;
-  transition: opacity 0.8s ease;
-  animation: twinkleStar 3.4s ease-in-out infinite;
-  animation-delay: var(--sd, 0s);
-}
-
-.page.dark .star {
-  opacity: var(--so, 0.7);
-}
-
-@keyframes twinkleStar {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.35;
-  }
-
-  50% {
-    transform: scale(1.6);
-    opacity: 1;
-  }
-}
-
-/* ---- ambient drifting color blobs — the "pop" behind the minimal layout ---- */
-
-.auroraField {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.auroraBlob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(64px);
-  transition: opacity 0.6s ease;
-}
-
-.auroraBlob:nth-child(1) {
-  top: -14%;
-  right: -6%;
-  width: 440px;
-  height: 440px;
-  background: radial-gradient(circle, var(--accent-strong) 0%, transparent 70%);
-  opacity: 0.5;
-}
-
-.auroraBlob:nth-child(2) {
-  bottom: -18%;
-  left: -8%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, #6D8F61 0%, transparent 70%);
-  opacity: 0.34;
-}
-
-.auroraBlob:nth-child(3) {
-  top: 38%;
-  left: 48%;
-  width: 320px;
-  height: 320px;
-  background: radial-gradient(circle, #5C7C93 0%, transparent 70%);
-  opacity: 0.22;
-}
-
-.page.dark .auroraBlob {
-  opacity: 0.16;
-  mix-blend-mode: screen;
-}
-
-.page.dark .auroraBlob:nth-child(2) {
-  opacity: 0.12;
-}
-
-.page.dark .auroraBlob:nth-child(3) {
-  opacity: 0.1;
-}
-
-/* ---- faint grain, so the flat paper background feels tactile, not empty ---- */
-
-.grainOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.05;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-.page.dark .grainOverlay {
-  opacity: 0.07;
-}
-
-/* ---- scattered stars/sparkles — the fun bit, always visible, never moves ---- */
-
-.decorField {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.decorMark {
-  position: absolute;
-  font-family: var(--font-display);
-  line-height: 1;
-  user-select: none;
-  transform: rotate(var(--r, 0deg));
-  color: var(--c, var(--accent));
-  opacity: var(--o, 0.5);
-  font-size: var(--s, 20px);
-}
-
-.page.dark .decorMark {
-  opacity: calc(var(--o, 0.5) * 0.7);
 }
 
 /* ------------------------------------------------------------------ */
@@ -197,15 +54,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: clamp(12px, 2vh, 20px) clamp(24px, 5vw, 56px);
+  padding: clamp(14px, 2.5vh, 24px) clamp(24px, 5vw, 56px);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   font-family: var(--font-brand);
-  font-size: 25px;
+  font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.015em;
 }
@@ -214,59 +71,45 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   background: var(--accent);
   color: var(--on-accent);
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  animation: twinkleOnce 1.8s ease 1.1s;
-  box-shadow: 0 8px 18px -8px var(--accent);
-}
-
-@keyframes twinkleOnce {
-
-  0%,
-  100% {
-    transform: scale(1) rotate(0deg);
-  }
-
-  50% {
-    transform: scale(1.12) rotate(8deg);
-  }
+  box-shadow: 0 6px 14px -6px var(--accent);
+  transition: transform 0.3s ease;
 }
 
 .brand:hover .logoMark {
-  transform: rotate(-14deg) scale(1.08);
+  transform: rotate(-8deg);
 }
 
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
-/* ---- theme toggle — now with a little spark burst on every tap ---- */
+/* ---- theme toggle ---- */
 
 .themeToggle {
   position: relative;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 1px solid var(--line);
   background: var(--surface);
   cursor: pointer;
-  overflow: visible;
-  perspective: 200px;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
 }
 
 .themeToggle:hover {
-  border-color: var(--accent-strong);
+  border-color: var(--ink-mute);
 }
 
 .themeToggle:active {
-  transform: scale(0.9);
+  transform: scale(0.92);
 }
 
 .themeIconClip {
@@ -282,8 +125,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent-strong);
-  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease;
+  color: var(--ink);
+  transition: transform 0.4s ease, opacity 0.3s ease;
 }
 
 .themeIconSun {
@@ -292,12 +135,12 @@
 }
 
 .themeIconMoon {
-  transform: rotate(-130deg) scale(0.3);
+  transform: rotate(-90deg) scale(0.4);
   opacity: 0;
 }
 
 .themeToggle.dark .themeIconSun {
-  transform: rotate(130deg) scale(0.3);
+  transform: rotate(90deg) scale(0.4);
   opacity: 0;
 }
 
@@ -306,40 +149,17 @@
   opacity: 1;
 }
 
-.burstSpark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--spark-color, var(--accent-strong));
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-  animation: sparkBurst 0.55s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
-  pointer-events: none;
-}
-
-@keyframes sparkBurst {
-  to {
-    opacity: 0;
-    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2);
-  }
-}
-
 .navLink {
-  background: var(--surface);
-  border: 1px solid var(--line);
+  background: none;
+  border: 1.5px solid var(--line);
   border-radius: 999px;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
   color: var(--ink);
-  opacity: 1;
   cursor: pointer;
-  position: relative;
-  padding: 9px 18px;
-  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 8px 20px;
+  transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .navLink::after {
@@ -347,11 +167,8 @@
 }
 
 .navLink:hover {
-  border-color: var(--accent-strong);
+  border-color: var(--ink-mute);
   background: var(--accent-soft);
-  color: var(--accent-strong);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 18px -12px var(--accent-strong);
 }
 
 /* ------------------------------------------------------------------ */
@@ -366,138 +183,71 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: clamp(40px, 7vh, 76px);
-  max-width: 1160px;
+  gap: clamp(28px, 4.5vh, 48px);
+  max-width: 1100px;
   width: 100%;
   margin: 0 auto;
-  padding: clamp(22px, 4vh, 40px) clamp(24px, 5vw, 64px) clamp(16px, 3vh, 32px);
+  padding: clamp(12px, 2.5vh, 28px) clamp(24px, 5vw, 64px) clamp(12px, 2vh, 24px);
 }
 
 .heroGrid {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: 1.1fr 0.9fr;
   align-items: center;
-  gap: clamp(24px, 5vw, 56px);
+  gap: clamp(24px, 4vw, 48px);
 }
 
 .heroLeft {
   position: relative;
-  max-width: 460px;
+  max-width: 480px;
   opacity: 0;
-  animation: riseIn 0.7s ease 0.1s forwards;
-}
-
-.heroGlow {
-  position: absolute;
-  top: -90px;
-  left: -110px;
-  width: 460px;
-  height: 460px;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
-  opacity: 0;
-  filter: blur(14px);
-  animation: glowBurst 1.3s ease 0.1s forwards;
-  pointer-events: none;
-  z-index: -1;
-}
-
-@keyframes glowBurst {
-  0% {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-
-  35% {
-    opacity: 0.55;
-  }
-
-  100% {
-    opacity: 0;
-    transform: scale(1.3);
-  }
+  animation: fadeUp 0.6s ease 0.1s forwards;
 }
 
 .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
   font-family: var(--font-body);
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-mute);
   margin: 0 0 10px;
 }
 
-.eyebrowSpark {
-  color: var(--accent-strong);
-  animation: sparkTwinkle 2.4s ease-in-out infinite 1.4s;
-}
-
-@keyframes sparkTwinkle {
-
-  0%,
-  100% {
-    opacity: 0.4;
-    transform: scale(0.85);
-  }
-
-  50% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-}
-
 .heroTitle {
   font-family: var(--font-display);
-  font-size: clamp(42px, 7.4vh, 84px);
-  font-weight: 680;
-  line-height: 1.0;
-  letter-spacing: -0.03em;
-  margin: 0 0 18px;
+  font-size: clamp(40px, 7vh, 78px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  margin: 0 0 16px;
 }
 
 .heroLine {
   display: block;
   overflow: hidden;
-  padding-bottom: 0.08em;
+  padding-bottom: 0.06em;
 }
 
 .heroLine span {
   display: block;
   opacity: 0;
-  transform: translateY(115%) scale(0.8) rotate(-3deg);
-  animation: boomIn 0.75s cubic-bezier(0.2, 1.4, 0.4, 1) forwards;
+  transform: translateY(100%);
+  animation: slideUp 0.55s ease forwards;
 }
 
 .heroLine:nth-child(1) span {
-  animation-delay: 0.12s;
+  animation-delay: 0.15s;
 }
 
 .heroLine:nth-child(2) span {
-  animation-delay: 0.28s;
+  animation-delay: 0.3s;
 }
 
-@keyframes boomIn {
-  0% {
-    opacity: 0;
-    transform: translateY(115%) scale(0.75) rotate(-4deg);
-  }
-
-  55% {
+@keyframes slideUp {
+  to {
     opacity: 1;
-    transform: translateY(0) scale(1.08) rotate(1deg);
-  }
-
-  75% {
-    transform: translateY(0) scale(0.97) rotate(-0.5deg);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1) rotate(0deg);
+    transform: translateY(0);
   }
 }
 
@@ -514,13 +264,13 @@
   left: 0;
   bottom: 2px;
   width: 100%;
-  height: 6px;
-  background: color-mix(in srgb, var(--accent-strong) 40%, transparent);
-  border-radius: 3px;
+  height: 4px;
+  background: color-mix(in srgb, var(--accent-strong) 30%, transparent);
+  border-radius: 2px;
   z-index: -1;
   transform: scaleX(0);
   transform-origin: left;
-  animation: sweepIn 0.5s ease 0.9s forwards;
+  animation: sweepIn 0.4s ease 0.8s forwards;
 }
 
 @keyframes sweepIn {
@@ -530,21 +280,21 @@
 }
 
 .heroSubtitle {
-  font-size: 15.5px;
+  font-size: 15px;
   line-height: 1.55;
   color: var(--ink-mute);
-  max-width: 420px;
-  margin: 0 0 20px;
+  max-width: 400px;
+  margin: 0 0 18px;
   opacity: 0;
-  animation: riseIn 0.6s ease 0.5s forwards;
+  animation: fadeUp 0.5s ease 0.45s forwards;
 }
 
 .heroActions {
   display: flex;
   align-items: center;
-  gap: 26px;
+  gap: 24px;
   opacity: 0;
-  animation: riseIn 0.6s ease 0.62s forwards;
+  animation: fadeUp 0.5s ease 0.55s forwards;
 }
 
 .primaryBtn {
@@ -553,43 +303,25 @@
   align-items: center;
   gap: 8px;
   font-family: var(--font-body);
-  font-size: 16.5px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--paper);
   background: var(--ink);
   border: none;
-  border-radius: 9px;
-  padding: 13px 22px;
+  border-radius: 8px;
+  padding: 12px 22px;
   cursor: pointer;
   overflow: hidden;
-  transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
-}
-
-.primaryBtn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -60%;
-  width: 40%;
-  height: 100%;
-  background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-  transform: skewX(-20deg);
-  transition: left 0.6s ease;
-}
-
-.primaryBtn:hover::before {
-  left: 130%;
+  transition: background 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease;
 }
 
 .primaryBtn svg {
-  transition: transform 0.25s ease;
+  transition: transform 0.2s ease;
 }
 
 .primaryBtn:hover {
-  background: var(--accent);
-  color: var(--ink-on-accent);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px -10px var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px -8px rgba(33, 28, 24, 0.35);
 }
 
 .primaryBtn:hover svg {
@@ -602,19 +334,19 @@
 
 .ghostBtn {
   font-family: var(--font-body);
-  font-size: 15px;
-  color: var(--ink);
+  font-size: 14px;
+  color: var(--ink-mute);
   background: none;
   border: none;
-  padding: 13px 0;
+  padding: 12px 0;
   cursor: pointer;
   border-bottom: 1px solid var(--line);
   transition: border-color 0.2s ease, color 0.2s ease;
 }
 
 .ghostBtn:hover {
-  border-color: var(--accent-strong);
-  color: var(--accent-strong);
+  border-color: var(--ink);
+  color: var(--ink);
 }
 
 /* ------------------------------------------------------------------ */
@@ -623,7 +355,7 @@
 
 .heroRight {
   opacity: 0;
-  animation: riseIn 0.8s ease 0.3s forwards;
+  animation: fadeUp 0.6s ease 0.25s forwards;
   display: flex;
   justify-content: center;
 }
@@ -631,25 +363,24 @@
 .cardStack {
   position: relative;
   width: 100%;
-  max-width: 380px;
+  max-width: 360px;
   height: 220px;
 }
 
-/* shared look for both cards — same size, same shape */
+/* shared look for both cards */
 .miniCard,
 .weekCard {
   position: absolute;
   width: 210px;
   min-height: 190px;
   box-sizing: border-box;
-  background: var(--surface);
+  background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 14px;
   padding: 18px;
   cursor: pointer;
   will-change: transform;
-  /* smooth, non-bouncy ease-out — no overshoot so quick hover swaps don't jitter */
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
 .miniCard {
@@ -659,91 +390,24 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  transform: rotate(8deg);
-  box-shadow: 0 18px 32px -22px rgba(33, 28, 24, 0.35);
-  animation: floatMini 6.2s ease-in-out infinite;
+  transform: rotate(6deg);
+  box-shadow: 0 12px 28px -16px rgba(33, 28, 24, 0.2);
 }
 
 .weekCard {
   bottom: 2px;
   left: 2px;
   z-index: 2;
-  transform: rotate(-4deg);
-  box-shadow: 0 24px 48px -28px rgba(33, 28, 24, 0.35);
-  animation: float 5s ease-in-out infinite;
+  transform: rotate(-3deg);
+  box-shadow: 0 16px 36px -20px rgba(33, 28, 24, 0.22);
 }
 
 /* whichever card is "front" glides up straight, lifted, and on top */
 .miniCard.isFront,
 .weekCard.isFront {
   z-index: 3;
-  transform: rotate(-1.5deg) translateY(-10px) scale(1.02);
-  box-shadow: 0 30px 56px -20px rgba(33, 28, 24, 0.42);
-  animation: none;
-}
-
-.miniCard:hover,
-.weekCard:hover {
-  box-shadow: 0 26px 46px -20px rgba(33, 28, 24, 0.4);
-}
-
-/* a little glowing "tap me" dot on whichever card is peeking behind */
-.miniCard:not(.isFront)::after,
-.weekCard:not(.isFront)::after {
-  content: '';
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent-strong);
-  opacity: 0;
-  animation: pulseDot 2s ease-in-out infinite;
-  transition: opacity 0.25s ease;
-}
-
-.cardStack:hover .miniCard:not(.isFront)::after,
-.cardStack:hover .weekCard:not(.isFront)::after {
-  opacity: 0.9;
-}
-
-@keyframes pulseDot {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.5;
-  }
-
-  50% {
-    transform: scale(1.7);
-    opacity: 1;
-  }
-}
-
-@keyframes floatMini {
-
-  0%,
-  100% {
-    transform: rotate(8deg) translateY(0);
-  }
-
-  50% {
-    transform: rotate(8deg) translateY(7px);
-  }
-}
-
-@keyframes float {
-
-  0%,
-  100% {
-    transform: rotate(-4deg) translateY(0);
-  }
-
-  50% {
-    transform: rotate(-4deg) translateY(-6px);
-  }
+  transform: rotate(-1deg) translateY(-8px) scale(1.01);
+  box-shadow: 0 20px 40px -16px rgba(33, 28, 24, 0.25);
 }
 
 .miniCardHead {
@@ -793,21 +457,6 @@
 .streakFlame {
   color: var(--accent-strong);
   display: inline-flex;
-  animation: flicker 1.6s ease-in-out infinite;
-}
-
-@keyframes flicker {
-
-  0%,
-  100% {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
-  }
-
-  50% {
-    transform: scale(1.14) rotate(-4deg);
-    opacity: 0.85;
-  }
 }
 
 .weekGrid {
@@ -837,19 +486,14 @@
 .daySquare {
   width: 100%;
   aspect-ratio: 1;
-  border-radius: 6px;
+  border-radius: 5px;
   background: var(--lvl-color);
   border: 1.5px solid transparent;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease;
-}
-
-.dayCell:hover .daySquare {
-  transform: scale(1.12);
+  transition: border-color 0.2s ease;
 }
 
 .dayCell.daySelected .daySquare {
   border-color: var(--accent-strong);
-  transform: scale(1.16);
 }
 
 .weekNote {
@@ -871,205 +515,69 @@
   color: var(--ink-mute);
   margin: 0;
   min-height: 28px;
-  animation: riseIn 0.3s ease;
+  animation: fadeIn 0.25s ease;
 }
 
 /* ------------------------------------------------------------------ */
-/*  Features — smaller, interactive pastel cards                       */
+/*  Features — clean, static cards                                     */
 /* ------------------------------------------------------------------ */
 
 .journey {
   position: relative;
   z-index: 1;
   opacity: 0;
-  animation: riseIn 0.7s ease 0.4s forwards;
-  padding-top: clamp(20px, 3.5vh, 36px);
+  animation: fadeUp 0.5s ease 0.4s forwards;
+  padding-top: clamp(4px, 1vh, 12px);
 }
 
 .featuresGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 8px;
 }
 
 .featureCard {
-  position: relative;
   text-align: left;
   background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 10px 12px 12px;
-  cursor: pointer;
+  border-radius: 10px;
+  padding: 12px 12px 14px;
+  cursor: default;
   font-family: var(--font-body);
-  overflow: hidden;
   opacity: 0;
-  animation: cardPopIn 0.5s cubic-bezier(0.24, 1.2, 0.4, 1) forwards;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeUp 0.4s ease forwards;
 }
 
-@keyframes cardPopIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.92);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.featuresGrid .featureCard:nth-child(1) {
-  animation-delay: 0.05s;
-}
-
-.featuresGrid .featureCard:nth-child(2) {
-  animation-delay: 0.11s;
-}
-
-.featuresGrid .featureCard:nth-child(3) {
-  animation-delay: 0.17s;
-}
-
-.featuresGrid .featureCard:nth-child(4) {
-  animation-delay: 0.23s;
-}
-
-.featuresGrid .featureCard:nth-child(5) {
-  animation-delay: 0.29s;
-}
-
-.featuresGrid .featureCard:nth-child(6) {
-  animation-delay: 0.35s;
-}
-
-.featureCard::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--f-bg);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.featureCard::after {
-  content: '\2726';
-  position: absolute;
-  top: 7px;
-  right: 9px;
-  font-size: 10px;
-  color: var(--f-accent);
-  opacity: 0;
-  transform: scale(0.4) rotate(-30deg);
-  transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 1;
-}
-
-.featureCard:nth-child(odd):hover,
-.featureCard:nth-child(odd):focus-visible {
-  transform: translateY(-5px) rotate(-1.5deg) scale(1.035);
-}
-
-.featureCard:nth-child(even):hover,
-.featureCard:nth-child(even):focus-visible {
-  transform: translateY(-5px) rotate(1.5deg) scale(1.035);
-}
-
-.featureCard:hover,
-.featureCard:focus-visible {
-  border-color: var(--f-accent);
-  box-shadow: 0 16px 26px -14px var(--f-accent);
-}
-
-.featureCard:hover::before,
-.featureCard:focus-visible::before {
-  opacity: 0.7;
-}
-
-.featureCard:hover::after,
-.featureCard:focus-visible::after {
-  opacity: 1;
-  transform: scale(1) rotate(0deg);
-}
-
-.page.dark .featureCard::before {
-  mix-blend-mode: normal;
-}
-
-.page.dark .featureCard:hover::before,
-.page.dark .featureCard:focus-visible::before {
-  opacity: 0.3;
-}
-
-.page.dark .featureCard:hover,
-.page.dark .featureCard:focus-visible {
-  border-color: color-mix(in srgb, var(--f-accent) 45%, var(--line));
-  box-shadow: 0 16px 26px -18px color-mix(in srgb, var(--f-accent) 55%, transparent);
-}
-
-.page.dark .featureCard:hover .featureIconWrap,
-.page.dark .featureCard:focus-visible .featureIconWrap {
-  background: color-mix(in srgb, var(--f-accent) 55%, var(--surface));
-}
+.featuresGrid .featureCard:nth-child(1) { animation-delay: 0.5s; }
+.featuresGrid .featureCard:nth-child(2) { animation-delay: 0.57s; }
+.featuresGrid .featureCard:nth-child(3) { animation-delay: 0.64s; }
+.featuresGrid .featureCard:nth-child(4) { animation-delay: 0.71s; }
+.featuresGrid .featureCard:nth-child(5) { animation-delay: 0.78s; }
 
 .featureIconWrap {
-  position: relative;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 7px;
   background: var(--surface);
-  color: var(--ink-mute);
+  color: var(--f-accent, var(--ink-mute));
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 7px;
-  transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
-  z-index: 1;
-}
-
-.featureCard:hover .featureIconWrap,
-.featureCard:focus-visible .featureIconWrap {
-  background: var(--f-accent);
-  color: var(--on-accent);
-  animation: iconSpinPop 0.55s cubic-bezier(0.3, 1.6, 0.4, 1);
-}
-
-@keyframes iconSpinPop {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-
-  55% {
-    transform: rotate(300deg) scale(1.28);
-  }
-
-  100% {
-    transform: rotate(360deg) scale(1);
-  }
+  margin-bottom: 10px;
 }
 
 .featureTitle {
-  position: relative;
   font-family: var(--font-display);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 460;
-  margin: 0 0 3px;
-  z-index: 1;
-  transition: color 0.25s ease;
-}
-
-.featureCard:hover .featureTitle,
-.featureCard:focus-visible .featureTitle {
-  color: var(--f-accent);
+  margin: 0 0 4px;
 }
 
 .featureDesc {
-  position: relative;
-  font-size: 10.5px;
-  line-height: 1.45;
+  font-size: 11px;
+  line-height: 1.5;
   color: var(--ink-mute);
   margin: 0;
-  z-index: 1;
 }
 
 /* ------------------------------------------------------------------ */
@@ -1083,7 +591,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: clamp(10px, 1.4vh, 16px) clamp(24px, 5vw, 56px);
+  padding: clamp(12px, 1.6vh, 18px) clamp(24px, 5vw, 56px);
   font-size: 11.5px;
   color: var(--ink-mute);
 }
@@ -1096,30 +604,30 @@
 }
 
 /* ------------------------------------------------------------------ */
-/*  Motion + a11y                                                      */
+/*  Shared animations                                                  */
 /* ------------------------------------------------------------------ */
 
-@keyframes riseIn {
+@keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
+@media (prefers-reduced-motion: reduce) {
   .page *,
   .weekCard,
   .miniCard,
   .logoMark,
-  .eyebrowSpark,
-  .streakFlame,
-  .star,
   .featureCard {
     animation: none !important;
     transition-duration: 0.01ms !important;
@@ -1135,10 +643,6 @@
   .featureCard {
     opacity: 1 !important;
     transform: none !important;
-  }
-
-  .heroGlow {
-    display: none;
   }
 }
 
@@ -1176,7 +680,6 @@
     max-width: 320px;
     margin: 0 auto;
     transform: none;
-    animation: none;
   }
 
   .featuresGrid {
@@ -1193,9 +696,5 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
-  }
-
-  .decorMark {
-    opacity: calc(var(--o, 0.5) * 0.6);
   }
 }

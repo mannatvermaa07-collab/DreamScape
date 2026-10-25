@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  height: calc(100vh - 120px);
+  min-height: 0;
 }
 
 .topControls {
@@ -31,11 +33,14 @@
 .calendarGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: auto repeat(6, 1fr);
   gap: 1px;
   background-color: var(--border-color);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   overflow: hidden;
+  flex: 1;
+  min-height: 0;
 }
 
 .weekdayHeader {
@@ -51,7 +56,7 @@
 
 .dayCell {
   background-color: var(--bg-card);
-  min-height: 110px;
+  min-height: 0;
   padding: 8px;
   display: flex;
   flex-direction: column;
@@ -59,6 +64,7 @@
   cursor: pointer;
   transition: background-color var(--transition-fast), border-color var(--transition-fast);
   position: relative;
+  overflow: hidden;
 }
 
 .dayCell:hover {
@@ -411,7 +417,7 @@
   gap: 3px;
 }
 
-/* Full-line highlight — entire row filled with the site's primary color */
+/* Full-line highlight — entire row filled with the site's primary color (holidays) */
 .importantLine {
   font-size: 12px;
   font-weight: 600;
@@ -425,6 +431,12 @@
   line-height: 1.4;
   letter-spacing: 0.01em;
   display: block;
+}
+
+/* User-added special occasions — bright yellow to differentiate from holidays */
+.importantLineNote {
+  background: linear-gradient(135deg, #FFE500, #FADD00);
+  color: #1a1400;
 }
 
 .importantMore {
@@ -674,6 +686,10 @@
     text-indent: -9999px;
     overflow: hidden;
     display: inline-block;
+  }
+
+  .importantLineNote {
+    background: #FFE500;
   }
 
   .secondarySummary {

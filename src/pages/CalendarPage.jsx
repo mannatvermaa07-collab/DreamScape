@@ -239,7 +239,7 @@ export function CalendarPage() {
                 {important.length > 0 && cell.isCurrentMonth && (
                   <div className={styles.importantList}>
                     {important.slice(0, 2).map((item) => (
-                      <span key={item.key} className={styles.importantLine}>
+                      <span key={item.key} className={`${styles.importantLine} ${item.kind === 'note' ? styles.importantLineNote : ''}`}>
                         {item.label}
                       </span>
                     ))}

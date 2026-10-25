@@ -1,11 +1,9 @@
-import { useNavigate } from 'react-router-dom';
 import { Menu, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import styles from '../../styles/Navbar.module.css';
 
 export function Navbar({ onToggleSidebar }) {
-  const navigate = useNavigate();
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
@@ -38,36 +36,6 @@ export function Navbar({ onToggleSidebar }) {
           {theme === 'dark' ? <Moon size={14} /> : <Sun size={14} />}
           <span>{theme === 'dark' ? 'Dark' : 'Light'}</span>
         </button>
-
-        {user?.avatar ? (
-          <img
-            src={user.avatar}
-            alt={user.name || 'User'}
-            className={styles.profileAvatarBtn}
-            onClick={() => navigate('/app/settings')}
-            title="Account Settings"
-          />
-        ) : (
-          <div
-            className={styles.profileAvatarBtn}
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '50%',
-              backgroundColor: 'var(--primary)',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 700,
-              fontSize: '13px',
-              cursor: 'pointer'
-            }}
-            onClick={() => navigate('/app/settings')}
-          >
-            {(user?.name || 'User').charAt(0).toUpperCase()}
-          </div>
-        )}
       </div>
     </header>
   );

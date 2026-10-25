@@ -1,46 +1,52 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { sendMessage } from '../../lib/gemini';
 import styles from '../../styles/FloatingChatWidget.module.css';
 
 export function FloatingChatWidget() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'assistant',
-      text: "Hello! I am your DreamScape AI Copilot. How can I help optimize your goals, habits, or schedule today?"
+      text: "Hey! I'm your DreamScape AI assistant. How can I help you today?"
     }
   ]);
 
-  const handleSend = (e) => {
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
+
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
 
     const userMsg = { id: Date.now(), sender: 'user', text: input };
     setMessages((prev) => [...prev, userMsg]);
     const currentInput = input;
     setInput('');
+    setIsLoading(true);
 
-    // Simulated responsive static response
-    setTimeout(() => {
-      let botReply = "I've noted that in your growth log! Consistency in daily focus sessions is key.";
-      const lower = currentInput.toLowerCase();
-      if (lower.includes('goal') || lower.includes('target')) {
-        botReply = "Great question regarding goals! Deconstructing targets into 14-day milestones increases completion probability by 40%.";
-      } else if (lower.includes('habit') || lower.includes('streak')) {
-        botReply = "Maintaining a habit streak compounds exponentially. Make sure to check off your routine before 9 PM today.";
-      } else if (lower.includes('calendar') || lower.includes('schedule')) {
-        botReply = "You can view all your logged entries and daily progress inside the dedicated Calendar view!";
-      }
-
+    try {
+      const response = await sendMessage(currentInput);
       setMessages((prev) => [
         ...prev,
-        { id: Date.now() + 1, sender: 'assistant', text: botReply }
+        { id: Date.now() + 1, sender: 'assistant', text: response }
       ]);
-    }, 500);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now() + 1, sender: 'assistant', text: 'Sorry, something went wrong. Try again.' }
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -50,7 +56,7 @@ export function FloatingChatWidget() {
           <div className={styles.popupHeader}>
             <div className={styles.titleBox}>
               <Bot size={18} style={{ color: 'var(--primary)' }} />
-              <span>DreamScape AI Assistant</span>
+              <span>DreamScape AI</span>
             </div>
             <div style={{ display: 'flex', gap: '4px' }}>
               <button
@@ -84,17 +90,31 @@ export function FloatingChatWidget() {
                 {m.text}
               </div>
             ))}
+            {isLoading && (
+              <div className={`${styles.messageBubble} ${styles.assistantBubble}`}>
+                <span className={styles.typingDots}>
+                  <span /><span /><span />
+                </span>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
           </div>
 
           <form onSubmit={handleSend} className={styles.inputRow}>
             <input
               type="text"
-              placeholder="Ask AI assistant..."
+              placeholder={isLoading ? 'Thinking...' : 'Ask AI assistant...'}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               className={styles.chatInput}
+              disabled={isLoading}
             />
-            <button type="submit" className={styles.sendBtn} title="Send Message">
+            <button
+              type="submit"
+              className={styles.sendBtn}
+              title="Send Message"
+              disabled={isLoading || !input.trim()}
+            >
               <Send size={15} />
             </button>
           </form>
